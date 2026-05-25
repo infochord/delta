@@ -1,0 +1,6795 @@
+﻿<?php include 'header.php';?>
+<style>
+  :root {
+    --artspace-text: #6b4a2f;
+    --artspace-bg: #f5ede2;
+    --artspace-border: #cfb08b;
+    --artspace-hover: #ead8c2;
+    --artspace-active: #8c5a2b;
+    --artspace-active-text: #fffaf4;
+    --contemporary-text: #1d4c4f;
+    --contemporary-bg: #e6f1ef;
+    --contemporary-border: #9ec3bd;
+    --contemporary-hover: #d3e5e1;
+    --contemporary-active: #2d6f73;
+    --contemporary-active-text: #f6fbfb;
+    --mixed-text: #4b4639;
+    --mixed-bg: linear-gradient(135deg, #e6f1ef 0 50%, #f5ede2 50% 100%);
+    --mixed-border: #b5b09e;
+    --mixed-hover: linear-gradient(135deg,  #d3e5e1 0 50%, #ead8c2 50% 100%);
+    --mixed-active: linear-gradient(135deg, #2d6f73 0 50%, #8c5a2b 50% 100%);
+    --mixed-active-text: #fffaf4;
+  }
+
+  .card,
+  .card-img-top,
+  .card-body,
+  .btn {
+    border-radius: 0 !important;
+  }
+
+  .card {
+    box-shadow: none !important;
+    transform: none !important;
+    transition: none !important;
+  }
+
+  .card:hover {
+    box-shadow: none !important;
+    transform: none !important;
+  }
+
+  .gallery-img,
+  .gallery-img:hover {
+    transform: none !important;
+    box-shadow: none !important;
+    transition: none !important;
+  }
+
+  .scroll-container .nav {
+    gap: 0.5rem;
+    padding-bottom: 0.25rem;
+  }
+
+  .scroll-container .nav-tabs {
+    border-bottom: 0;
+  }
+
+  .scroll-container .year {
+    color: var(--artspace-text);
+    background: var(--artspace-bg);
+    border-radius: 999px;
+    font-weight: 600;
+    padding: 0.6rem 1.1rem;
+    border: 1px solid var(--artspace-border);
+    transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease,
+      box-shadow 0.2s ease, background-image 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .scroll-container .year:hover,
+  .scroll-container .year:focus-visible {
+    color: var(--artspace-text);
+    background: var(--artspace-hover);
+    border-color: var(--artspace-active);
+    box-shadow: 0 0 0 0.15rem rgba(45, 111, 115, 0.12);
+  }
+
+  .scroll-container .year.active {
+    color: var(--artspace-active-text);
+    background: var(--artspace-active);
+    border-color: var(--artspace-active);
+  }
+
+  .scroll-container .year.exhibition-artspace {
+    color: var(--artspace-text);
+    background: var(--artspace-bg);
+    border-color: var(--artspace-border);
+  }
+
+  .scroll-container .year.exhibition-artspace:hover,
+  .scroll-container .year.exhibition-artspace:focus-visible {
+    color: var(--artspace-text);
+    background: var(--artspace-hover);
+    border-color: var(--artspace-active);
+  }
+
+  .scroll-container .year.exhibition-artspace.active {
+    color: var(--artspace-active-text);
+    background: var(--artspace-active);
+    border-color: var(--artspace-active);
+  }
+
+  .scroll-container .year.exhibition-contemporary {
+    color: var(--contemporary-text);
+    background: var(--contemporary-bg);
+    border-color: var(--contemporary-border);
+  }
+
+  .scroll-container .year.exhibition-contemporary:hover,
+  .scroll-container .year.exhibition-contemporary:focus-visible {
+    color: var(--contemporary-text);
+    background: var(--contemporary-hover);
+    border-color: var(--contemporary-active);
+  }
+
+  .scroll-container .year.exhibition-contemporary.active {
+    color: var(--contemporary-active-text);
+    background: var(--contemporary-active);
+    border-color: var(--contemporary-active);
+  }
+
+  .scroll-container .year.exhibition-mixed {
+    color: var(--mixed-text);
+    background: var(--mixed-bg);
+    border-color: var(--mixed-border);
+  }
+
+  .scroll-container .year.exhibition-mixed:hover,
+  .scroll-container .year.exhibition-mixed:focus-visible {
+    color: var(--mixed-text);
+    background: var(--mixed-hover);
+    border-color: var(--mixed-border);
+  }
+
+  .scroll-container .year.exhibition-mixed.active {
+    color: var(--mixed-active-text);
+    background: var(--mixed-active);
+    border-color: transparent;
+  }
+
+  .exhibition-legend {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 0.85rem 1.5rem;
+    margin: 0.75rem 0 1.5rem;
+    padding: 0.35rem 0;
+  }
+
+  .legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: #493f34;
+    font-size: 0.96rem;
+  }
+
+  .legend-swatch {
+    width: 1rem;
+    height: 1rem;
+    border-radius: 0.3rem;
+    border: 1px solid rgba(0, 0, 0, 0.12);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.4);
+    flex: 0 0 auto;
+  }
+
+  .legend-swatch-artspace {
+    background: var(--artspace-active);
+  }
+
+  .legend-swatch-contemporary {
+    background: var(--contemporary-active);
+  }
+
+  .legend-text strong {
+    font-weight: 700;
+    color: #2f2921;
+  }
+</style>
+<div class="container">
+   <!-- <h1 class="section-title">Exhibitions</h1> -->
+      <div class="exhibition-legend" aria-label="Exhibition color legend">
+        <div class="legend-item">
+          <span class="legend-swatch legend-swatch-artspace" aria-hidden="true"></span>
+          <span class="legend-text"><strong>Artspace</strong></span>
+        </div>
+        <div class="legend-item">
+          <span class="legend-swatch legend-swatch-contemporary" aria-hidden="true"></span>
+          <span class="legend-text"><strong>Contemporary</strong></span>
+        </div>
+      </div>
+  <!-- Scrollable Year Tabs -->
+  <div class="scroll-container overflow-auto">
+    <ul class="nav mt-1 nav-tabs flex-nowrap" id="yearTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link year exhibition-contemporary active" id="y2026-tab" data-bs-toggle="tab" data-bs-target="#y2026" type="button" role="tab">2026</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year exhibition-contemporary" id="y2025-tab" data-bs-toggle="tab" data-bs-target="#y2025" type="button" role="tab">2025</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year exhibition-contemporary" id="y2024-tab" data-bs-toggle="tab" data-bs-target="#y2024" type="button" role="tab">2024</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year exhibition-mixed" id="y2023-tab" data-bs-toggle="tab" data-bs-target="#y2023" type="button" role="tab">2023</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="y2022-tab" data-bs-toggle="tab" data-bs-target="#y2022" type="button" role="tab">2022</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="y2021-tab" data-bs-toggle="tab" data-bs-target="#y2021" type="button" role="tab">2021</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="y2020-tab" data-bs-toggle="tab" data-bs-target="#y2020" type="button" role="tab">2020</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="y2019-tab" data-bs-toggle="tab" data-bs-target="#y2019" type="button" role="tab">2019</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="y2018-tab" data-bs-toggle="tab" data-bs-target="#y2018" type="button" role="tab">2018</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="y2017-tab" data-bs-toggle="tab" data-bs-target="#y2017" type="button" role="tab">2017</button>
+      </li>
+       <li class="nav-item">
+        <button class="nav-link year" id="y2016-tab" data-bs-toggle="tab" data-bs-target="#y2016" type="button" role="tab">2016</button>
+      </li>
+       <li class="nav-item">
+        <button class="nav-link year" id="y2015-tab" data-bs-toggle="tab" data-bs-target="#y2015" type="button" role="tab">2015</button>
+      </li>
+       <li class="nav-item">
+        <button class="nav-link year" id="y2014-tab" data-bs-toggle="tab" data-bs-target="#y2014" type="button" role="tab">2014</button>
+      </li>
+      <!-- add more years if needed -->
+    </ul>
+  </div>
+
+  <!-- Content Area -->
+  <div class="tab-content mt-4" id="yearTabsContent">
+
+      <div class="tab-pane fade show active" id="y2026" role="tabpanel">
+        <div class="container-fluid mt-4">
+           <!-- Scrollable Year Tabs -->
+            <div class="scroll-container">
+              <ul class="nav" id="yearTabs" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link year exhibition-contemporary active" id="R2026-tab" data-bs-toggle="tab" data-bs-target="#R2026" type="button" role="tab">What Remains</button>
+                </li>
+              </ul>
+            </div>
+
+              <!-- Content Area -->
+            <div class="tab-content mt-4" id="yearTabsContent">
+
+              <!-- Whats Remain-->
+              <div class="tab-pane fade show active" id="R2026" role="tabpanel">
+                <div class="container-fluid mt-4">
+                  <!-- Sub-tabs for What Remains -->
+                  <div class="scroll-container">
+                    <ul class="nav" id="subTabs2026" role="tablist">
+                      <li class="nav-item">
+                        <button class="nav-link year exhibition-contemporary active" id="IV2026-tab" data-bs-toggle="tab" data-bs-target="#IV2026" type="button" role="tab">Installation View</button>
+                      </li>
+                      <li class="nav-item">
+                        <button class="nav-link year exhibition-contemporary" id="AW2026-tab" data-bs-toggle="tab" data-bs-target="#AW2026" type="button" role="tab">Artworks</button>
+                      </li>
+                    </ul>
+                  </div>
+
+                  <!-- Sub Content Area -->
+                  <div class="tab-content mt-4" id="subTabsContent2026">
+                    <!-- Installation View -->
+                    <div class="tab-pane fade show active" id="IV2026" role="tabpanel">
+                      <div class="row g-4">
+                        <!-- Add installation view cards here -->
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC3597.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC3633.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC3659.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6411.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6446.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6448.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6449.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6451.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6455.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6458.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6459.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6462.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6466.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6544.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/Installation Images/_DSC6548.jpg" class="card-img-top gallery-img" alt="Installation View">
+                            <div class="card-body">
+                              <p>Installation View | What Remains</p>
+                            </div>
+                          </div>
+                        </div>
+                        <!-- Add more installation views as needed -->
+                      </div>
+                    </div>
+
+                    <!-- Artworks -->
+                    <div class="tab-pane fade" id="AW2026" role="tabpanel">
+                      <div class="row g-4">
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/IMG_3648.JPG" class="card-img-top gallery-img" alt="Prelude M II - Green">
+                            <div class="card-body">
+                              <p>Martand Khosla | <i>Prelude M II - Green</i></p>
+                              <p>Laser Etching On Intumescent Paint On MDF | 29 x 18 inches | 2024</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/IMG_3650.JPG" class="card-img-top gallery-img" alt="Prelude M I - White">
+                            <div class="card-body">
+                              <p>Martand Khosla | <i>Prelude M I - White</i></p>
+                              <p>Laser Etching On Intumescent Paint On MDF | 29 x 18 inches | 2023</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/NMAL-MKhosla-2221-image (4).png" class="card-img-top gallery-img" alt="Greater than 1.7">
+                            <div class="card-body">
+                              <p>Martand Khosla | <i>&gt;1.7</i></p>
+                              <p>Wood And Steel | Dia 35 x Depth 6 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/Capture.PNG" class="card-img-top gallery-img" alt="Untitled">
+                            <div class="card-body">
+                              <p>Sewali Deka | <i>Untitled</i></p>
+                              <p>Mixed Media On Canvas | 47.2 x 59 inches | 2022</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/Untitled design.jpg" class="card-img-top gallery-img" alt="Space">
+                            <div class="card-body">
+                              <p>Manu N | <i>Space</i></p>
+                              <p>Paper Pulp | 48 x 42 inches | 2024</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC3079.JPG" class="card-img-top gallery-img" alt="Khair">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i>Khair</i></p>
+                              <p>Glass Frit On Glass | Dia 5.90 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC3113.JPG" class="card-img-top gallery-img" alt="Untitled">
+                            <div class="card-body">
+                              <p>Sewali Deka | <i>Untitled</i></p>
+                              <p>Enamel Paint On Bamboo Fence (Set Of 3) | 70.8 x 62.9 inches | 2018</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC3140.JPG" class="card-img-top gallery-img" alt="Stepwell - 2">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i></i></p>
+                              <p>Flame Worked Sculpture Inside Blown Glass | 5 x 3 inches Each | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/Untitled design.jpg.jpeg" class="card-img-top gallery-img" alt="Fragmented Heritage">
+                            <div class="card-body">
+                              <p>Sayantan Samanta | <i>Decay</i></p>
+                              <p>Resin, Paper-Mache, Rice Husk, Rice Husk Ash, Cement, Talcum Etc | 90 x 30 x 30 inches | 2022</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6397.jpg" class="card-img-top gallery-img" alt="Rasna">
+                            <div class="card-body">
+                              <p>Manu N | <i>Edaphic Cells</i></p>
+                              <p>Terracotta And Salt Crystal | Variable Sizes | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6409.jpg" class="card-img-top gallery-img" alt="Tile-Whishing Stepwell">
+                            <div class="card-body">
+                              <p>Sangam Vankhade | <i>Stepwell-2</i></p>
+                              <p>Marble Stone | 24 x 14 x 21 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6477.jpg" class="card-img-top gallery-img" alt="Bui">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i>Thor</i></p>
+                              <p>Glass Frit On Glass | Dia 5.90 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6478.jpg" class="card-img-top gallery-img" alt="Thorr">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i>Shataavari</i></p>
+                              <p>Glass Frit On Glass | Dia 5.90 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6486.jpg" class="card-img-top gallery-img" alt="Shataavari">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i>Shataavari</i></p>
+                              <p>Flame Worked Sculpture Inside A Glass Blown Matka | 14 x 14 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6487.jpg" class="card-img-top gallery-img" alt="Khair">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i>Bui</i></p>
+                              <p>Flame Worked Sculpture Inside A Glass Blown Matka | 14 x 14 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6490.jpg" class="card-img-top gallery-img" alt="Shataavari">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i>Rasna</i></p>
+                              <p>Flame Worked Sculpture Inside A Glass Blown Matka | 16 x 16 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6491.jpg" class="card-img-top gallery-img" alt="Thor">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i>Thor</i></p>
+                              <p>Flame Worked Sculpture Inside A Glass Blown Matka | 10 x 10 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6497.jpg" class="card-img-top gallery-img" alt="Saruha Kilaru artwork">
+                            <div class="card-body">
+                              <p>Saruha Kilaru | <i>Ratti</i></p>
+                              <p>Flame Worked Sculpture Inside Blown Glass | 14 x 14 inches Each | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6502.jpg" class="card-img-top gallery-img" alt="Edaphic cells">
+                            <div class="card-body">
+                              <p>Sangam Vankhade | <i>Tile-Whishing Stepwell</i></p>
+                              <p>Marble Stone | 35 x 35 x 15 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6550.jpg" class="card-img-top gallery-img" alt="Fragmented Heritage">
+                            <div class="card-body">
+                              <p>Sangam Vankhade | <i>Fragmented Heritage</i></p>
+                              <p>Marble Stone | 55 x 18 x 24 inches | 2024</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/_DSC6568.jpg" class="card-img-top gallery-img" alt="A Fragment Monuments">
+                            <div class="card-body">
+                              <p>Sangam Vankhade | <i>A Fragment Monuments</i></p>
+                              <p>Resin And Marble Stone | 26 x 19 x 14 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/Copy of _RIP4929aa_8bits_Copy_.jpg" class="card-img-top gallery-img" alt="Untitled">
+                            <div class="card-body">
+                              <p>Sayantan Samanta | <i>Opulent</i></p>
+                              <p>Brass, Wood | 40 x 12 x 24 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+
+                        <div class="col-md-4 col-sm-6">
+                          <div class="card h-100">
+                            <img src="images/past exhibitions/2026/what remain/artworks/Copy of _RIP4970aa_8bits_Copy_.jpg" class="card-img-top gallery-img" alt="Untitled">
+                            <div class="card-body">
+                              <p>Sayantan Samanta | <i>Havoc</i></p>
+                              <p>Brass, Iron | 52 x 14 inches | 2025</p>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+      </div>
+
+      <div class="tab-pane fade show" id="y2025" role="tabpanel">
+        <div class="container-fluid mt-4">
+          <!-- Scrollable Year Tabs -->
+            <div class="scroll-container">
+              <ul class="nav" id="yearTabs" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link year exhibition-contemporary active" id="p2025-tab" data-bs-toggle="tab" data-bs-target="#p2025" type="button" role="tab">In, On, Through and Around</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link year exhibition-contemporary" id="R2025-tab" data-bs-toggle="tab" data-bs-target="#R2025" type="button" role="tab">Have You Lived Here?</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link year exhibition-contemporary" id="a2025-tab" data-bs-toggle="tab" data-bs-target="#a2025" type="button" role="tab">Speaking of Residues</button>
+                </li>
+              </ul>
+            </div>
+
+             <!-- Content Area -->
+            <div class="tab-content mt-4" id="yearTabsContent">
+               <!-- Ones Own World -->
+              <div class="tab-pane fade show active" id="p2025" role="tabpanel">
+                <div class="row g-4">
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/ATB1.jpg" class="card-img-top gallery-img" alt="Infiltrations">
+                      <div class="card-body">
+                        <p>Ana Teresa Barboza | <i>Infiltrations</i></p>
+                        <p>Tapestry Made Cotton, Alpaca And Sheep Thread With Natural Dyes | 64.5 x 37 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/DB 1.jpg" class="card-img-top gallery-img" alt="The HisanSali">
+                      <div class="card-body">
+                        <p>DwimuBoro | <i>The HisanSali (in Bodo) (Hisan- Verandah, Sali- Loom)</i></p>
+                        <p>Site-Specific Installation With Babool Wood, Bamboo, Matha Thread, Cotton Yarn, 4 Ply Acrylic Yarn | 91.7 x 87 x 73.2 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/MJ1.jpg" class="card-img-top gallery-img" alt="Beyond the Horizon">
+                      <div class="card-body">
+                        <p>Mahim Jana | <i>Beyond the Horizon</i></p>
+                        <p>Natural Dyed Cotton Cloth And Sewing Machine Stitching | 19.6 x 15.7 inches | 2022</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/MJ2.jpg" class="card-img-top gallery-img" alt="Beyond the Horizon">
+                      <div class="card-body">
+                        <p>Mahim Jana | <i>Beyond the Horizon</i></p>
+                        <p>Natural Dyed Cotton Cloth And Sewing Machine Stitching | 23.6 x 31.4 inches | 2023</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/MJ3.jpg" class="card-img-top gallery-img" alt="Beyond the Horizon">
+                      <div class="card-body">
+                        <p>Mahim Jana | <i>Beyond the Horizon</i></p>
+                        <p>Natural Dyed Cotton Cloth And Sewing Machine Stitching | 35.4 x 19.6 inches | 2023</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/MJ4.jpg" class="card-img-top gallery-img" alt="Beyond the Horizon">
+                      <div class="card-body">
+                        <p>Mahim Jana | <i>Beyond the Horizon</i></p>
+                        <p>Natural Dyed Cotton Cloth And Sewing Machine Stitching | 27.5 x 18.1 inches | 2023</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/SD2.jpg" class="card-img-top gallery-img" alt="Whispers II">
+                      <div class="card-body">
+                        <p>Sabiha Dohadwala | <i>Whispers II</i></p>
+                        <p>Hand-Woven, Hand-Dyed Cotton Yarn | 85 x 33 inches | 2021</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/SD3.PNG" class="card-img-top gallery-img" alt="Untitled">
+                      <div class="card-body">
+                        <p>Sabiha Dohadwala | <i>Untitled</i></p>
+                        <p>Hand-Woven, Cotton Yarn | Variable Size (each piece approx 11 x 12.9 inches) (center star approx 24 x 24 inches) | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/SD1.jpg" class="card-img-top gallery-img" alt="Untitled">
+                      <div class="card-body">
+                        <p>Sabiha Dohadwala | <i>Untitled</i></p>
+                        <p>Hand-Woven, Cotton And Wool Yarn | 72 x 44.8 inches | 2018</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/SM1.jpg" class="card-img-top gallery-img" alt="Continuities of Construction - Fabric Installation">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Continuities of Construction - Fabric Installation</i></p>
+                        <p>Warp - 20-22 Denier Single Silk; Wefts - 80'S Single Cotton, 2/120 Mercerized Cotton, 20-22 Denier Single Silk, Wood, Copper And Nylon Thread, Weaving: Chand Khan, Rajendra Pawar (Tana Bana Maheshwari Handlooms) | Variable dimensions (20 panels) | 2021</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/SM2.JPG" class="card-img-top gallery-img" alt="Steps 2">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Steps (2)</i></p>
+                        <p>Ball Pen, Pencil Drawing On Mountboard | 12.3 x 27.5 inches each (set of 2) | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/SM3.jpg" class="card-img-top gallery-img" alt="Steps 1">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Steps (1)</i></p>
+                        <p>Ball Pen, Pencil Drawing On Mountboard | 33.8 x 21.6 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/sm/1.JPG" class="card-img-top gallery-img" alt="Shapes of the amorphous 1 of 8">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Shapes of the Amorphous (1/8)</i></p>
+                        <p>20-22 Denier Single Silk x Silk Or Cotton Woven Fabric With Smocking With Cotton Thread | 3.9 x 11.8 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/sm/2.JPG" class="card-img-top gallery-img" alt="Shapes of the amorphous 2 of 8">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Shapes of the Amorphous (2/8)</i></p>
+                        <p>20-22 Denier Single Silk x Silk Or Cotton Woven Fabric With Smocking With Cotton Thread | 12.9 x 7 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/sm/3.JPG" class="card-img-top gallery-img" alt="Shapes of the amorphous 3 of 8">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Shapes of the Amorphous (3/8)</i></p>
+                        <p>20-22 Denier Single Silk x Silk Or Cotton Woven Fabric With Smocking With Cotton Thread | 14.1 x 7.8 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/sm/4.JPG" class="card-img-top gallery-img" alt="Shapes of the amorphous 4 of 8">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Shapes of the Amorphous (4/8)</i></p>
+                        <p>20-22 Denier Single Silk x Silk Or Cotton Woven Fabric With Smocking With Cotton Thread | 5.9 x 9 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/sm/5.JPG" class="card-img-top gallery-img" alt="Shapes of the amorphous 5 of 8">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Shapes of the Amorphous (5/8)</i></p>
+                        <p>20-22 Denier Single Silk x Silk Or Cotton Woven Fabric With Smocking With Cotton Thread | 9 x 5.9 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/sm/6.JPG" class="card-img-top gallery-img" alt="Shapes of the amorphous 6 of 8">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Shapes of the Amorphous (6/8)</i></p>
+                        <p>20-22 Denier Single Silk x Silk Or Cotton Woven Fabric With Smocking With Cotton Thread | 8.6 x 3.1 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/sm/7.JPG" class="card-img-top gallery-img" alt="Shapes of the amorphous 7 of 8">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Shapes of the Amorphous (7/8)</i></p>
+                        <p>20-22 Denier Single Silk x Silk Or Cotton Woven Fabric With Smocking With Cotton Thread | 18.8 x 11.8 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/in on through and around/sm/8.JPG" class="card-img-top gallery-img" alt="Shapes of the amorphous 8 of 8">
+                      <div class="card-body">
+                        <p>Shruti Mahajan | <i>Shapes of the Amorphous (8/8)</i></p>
+                        <p>20-22 Denier Single Silk x Silk Or Cotton Woven Fabric With Smocking With Cotton Thread | 4.4 x 3.5 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                </div>
+              </div>
+
+              <!-- Have You Lived Here -->
+              <div class="tab-pane fade" id="R2025" role="tabpanel">
+                <div class="row g-4">
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Pooja Krishna Shinde | <i>Aging Structure</i></p>
+                        <p>Etching On Paper | 12 x 12 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Pooja Krishna Shinde | <i>Aging Structure</i></p>
+                        <p>Etching On Paper | 12 x 12 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/3.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Pooja Krishna Shinde | <i>Upside Down</i></p>
+                        <p>Etching On Paper | 12 x 12 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/4.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Pooja Krishna Shinde | <i>Aging Structure 2</i></p>
+                        <p>Etching On Paper | 12 x 12 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/8.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Pooja Krishna Shinde | <i>Structure 3 Aged Floor</i></p>
+                        <p>Etching On Paper | 10 x 10 inches | 2023</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/11.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Pooja Krishna Shinde | <i>Object 2 Girgaon</i></p>
+                        <p>Etching On Paper | 10 x 10 inches | 2023</p>
+                      </div>
+                    </div>
+
+                  </div> <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/13.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Pooja Krishna Shinde | <i>Retro Lane/ Object 1</i></p>
+                        <p>Etching On Paper | 10 x 10 inches | 2023</p>
+                      </div>
+                    </div>
+                  </div> 
+              
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/chalapaka.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Chalapaka Chakravarthy | <i>Untitled</i></p>
+                        <p>Woodcut On Rice Paper | 8.3 x 11.7 inches (each) (A4 size - set of 10) | 2022</p>
+                      </div>
+                    </div>
+                  </div> 
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/Evolution of Comfort 1_Woodcut_15 X 17 inches_Simran Yagyik.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Simran Yagyik | <i>Evolution of Comfort</i></p>
+                        <p>Woodcut On Paper | 15 x 17 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div> 
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/Evolution of Comfort 2_Woodcut_15 x 16 inches_Simran Yagyik.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Simran Yagyik | <i>Evolution of Comfort</i></p>
+                        <p>Woodcut On Paper | 15 x 16 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/Home sweet home_Woodcut_.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Chalapaka Chakravarthy | <i>Home Sweet Home</i></p>
+                        <p>Woodcut On Paper | 8 x 4 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/Portal to protection_ Woodcut.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Chalapaka Chakravarthy | <i>Portal to Protection</i></p>
+                        <p>Woodcut On Paper | 8 x 4 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2025/Have You Lived Here_/IMG_20250214_103925.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                        <div class="card-body">
+                          <p>Akanksha Danraj Patil | <i>Saudade 15</i></p>
+                          <p>Mix Media | 108 x 48 inches (approx) | 2025</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/PNS55887.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Chalapaka Chakravarthy | <i>Portal to Protection (Installation)</i></p>
+                        <p>Woodcut On Paper | 8 x 4 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2025/Have You Lived Here_/Saudade 5.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                        <div class="card-body">
+                          <p>Akanksha Danraj Patil | <i>Saudade 8</i></p>
+                          <p>Mix Media | 64 x 45 inches | 2022</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2025/Have You Lived Here_/Saudade 9.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                        <div class="card-body">
+                          <p>Akanksha Danraj Patil | <i>Saudade 9</i></p>
+                          <p>Mix Media | 64 x 45 inches | 2022</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Have You Lived Here_/This is not a place to eat_Simran Yagyik.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Simran Yagyik | <i>Evolution of Comfort</i></p>
+                        <p>Woodcut On Paper | 6 x 4 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Add more woodcut artworks -->
+                </div>
+              </div>
+
+              <!-- Speaking of Resuides -->
+              <div class="tab-pane fade" id="a2025" role="tabpanel">
+                <div class="row g-4">
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/002.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Debashruti Aich | <i>Untitled</i></p>
+                        <p>Watercolour Drawing, Embroidery With Thread, Nepali Handmade Paper Lokta' | 30 x 32 inches | 2023</p>
+                      </div>
+                    </div>
+                  </div>
+                
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/img2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Debashruti Aich | <i>Culmination of Constraints</i></p>
+                        <p>Site-Specific, Watercolours On Rice Paper Cutouts, Oil Pastels On Canvas Fabric Cut-outs, Embroidery On Net Fabric, Hair Extensions | Variable | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/book2020.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Harun Al Rashid | <i>Resonance of Land</i></p>
+                        <p>Watercolour, Photo Transfer, Embroidery & Coffee Stain On Archival Paper | 8 x 6 inches each (set of 30) | 2023</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/DHI_residues_2123.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Thasni MA | <i>Musallah</i></p>
+                        <p>Paper Pulp, Canvas, Acrylic, Stranded Cotton | 62 x 42 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/DHI_residues_3137.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Deepanwita Das | <i>Ruins</i></p>
+                        <p>Ink Drawing On Plywood, Etching On Copper Plate, Minakari, Brass Hooks, Resins, Copper Wire, Natural Fiber | 36 x 48 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/DHI_residues_3142.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Athai Joham | <i>Overcome</i></p>
+                        <p>Cloth, Cement, Beans, Millet (Locally Referred To As Niphu In Wancho Tribe) | Variable | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/DPI Image.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Athai Joham | <i>The Scars of Cultivation</i></p>
+                        <p>Raw Fabric With Natural Ingredients Such As Corn, Beans, Hazelnut, Millet And Rice, Creating Physical Link To The Soil | 45 Ã— 97 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div> 
+              
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/IMG_20250409_153637 (1).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Deepanwita Das | <i>Entity</i></p>
+                        <p>Ink On Stained Paper | 27.5 x 19.5 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div> 
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/Slide7.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Deepanwita Das | <i>The Ghost</i></p>
+                        <p>Installation (Drawing On Paper, Ply Wood And Etched Copper Plate Matrix, Acrylic Sheet And Worm Light) | 30 x 32 inches | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/Slide13.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Deepanwita Das | <i> Putrefy</i></p>
+                        <p>Dry Point, Engraving & Etching On Acrylic Sheet | Variable (set of 3) | 2022</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/Slide20.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                              <p>Deepanwita Das |<i>Metamorphosis</i></p>
+                              <p>Ink On Stained Paper | 10 x 8 inches (each) (set of 4) | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/Slide30.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Deepanwita Das | <i>Recollecting Memories</i></p>
+                        <p>Cyanotype And Embroidery On Makhmal Cloth | 10.5 x 12.4 inches | 2025</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="col-md-4 col-sm-6">
+                    <div class="card h-100">
+                      <img src="images/past exhibitions/2025/Speaking of Residues/Slide35.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                      <div class="card-body">
+                        <p>Deepanwita Das | <i>Dusk</i></p>
+                        <p>Aquatint | 8 x 6 inches & 7 x 5 inches (set of 2) | 2024</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <!-- Add more woodcut artworks -->
+                </div>
+              </div>
+            </div>
+          </div>  
+        </div>
+
+      <div class="tab-pane fade" id="y2024" role="tabpanel">
+         <div class="container-fluid mt-4">
+              <!-- Scrollable Year Tabs -->
+              <div class="scroll-container ">
+                <ul class="nav" id="yearTabs" role="tablist">
+                  <li class="nav-item">
+                    <button class="nav-link year exhibition-contemporary active" id="p2024-tab" data-bs-toggle="tab" data-bs-target="#p2024" type="button" role="tab">Climate Recipes</button>
+                  </li>
+                  <li class="nav-item">
+                    <button class="nav-link year exhibition-contemporary" id="R2024-tab" data-bs-toggle="tab" data-bs-target="#R2024" type="button" role="tab">Highly Grainy</button>
+                  </li>
+                  <li class="nav-item">
+                    <button class="nav-link year exhibition-contemporary" id="a2024-tab" data-bs-toggle="tab" data-bs-target="#a2024" type="button" role="tab">I Distinctly Remember</button>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Content Area -->
+              <div class="tab-content mt-4" id="yearTabsContent">
+
+            <!-- Climate Recipes -->
+            <div class="tab-pane fade show active" id="p2024" role="tabpanel">
+              <div class="row g-4">
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.1.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Community Foresting
+                      In conversation with Prudhviraj Rupavath
+                      </span> </p>
+                      
+                    </div>
+                  </div>
+                </div>
+                  <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.2.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Grasslands are not wastelands
+                        In conversation with Pranay Juvvadi
+                        </span> </p>
+                      
+                    </div>
+                  </div>
+                </div>
+              
+              
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.3.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Only be a little successful 
+                      In conversation with Kavitha Kuruganti
+                      </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.4.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label"> Collective Foresight 
+                        In conversation with Bruno Dorin
+                        </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.5.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label"> Hold a fistful of Soil
+                          In conversation with Sikhamani
+                          </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.6.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Mind your stepwell 
+                      In conversation with Arch. Yeshwant Ramamurthy
+                      </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.7.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label"> Seeding knowledge
+                        In conversation with Harsha Durugadda and Teja Shilpa 
+                        </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.8.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Weekend farming 
+                        In conversation with Madhu Reddy
+                        </span> </p>
+                
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.9.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">If EV is the answer, what is the question?
+                      In conversation with Chirag Dhara
+                      </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.10.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Water is public heritage?
+                        In conversation with Kalpana Ramesh
+                        </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.11.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Where does someone sit in a classroom?
+                      In conversation with Susie Tharu
+                      </span> </p>
+                  
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.12.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">All stories are about us
+                        In conversation with Rahul M
+                        </span> </p>
+                  
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.13.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Growing rice without water
+                        In conversation with Ramanjaneyulu GV
+                        </span> </p>
+                  
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.14.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label">Which land should I farm on?
+                    In conversation with Sreeharsha Thanneru
+                    </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Climate Recipes/Image.15.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><span class="meta-label"> Reweaving Ecosystem 
+                        In conversation with Pouldas Nagendra Satish
+                        </span> </p>
+                    
+                    </div>
+                  </div>
+                </div>
+                <!-- Add more cards -->
+              </div>
+            </div>
+
+            <!-- Highly Grainy 2024 -->
+            <div class="tab-pane fade" id="R2024" role="tabpanel">
+              <div class="row g-4">
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Jaisingh Nageswaran | <i>The Land That Is No More 2002-2004</i></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Hari Katragadda | <i>24 Foam Impressions , 2016</i></p>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Azadi | <i>Yadegari, Ongoing Series</i></p>
+                    </div>
+                  </div>
+                </div>
+                
+                  <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                        <p><i>29, Empty Your Cup Ongoing Series</i></p>
+                    </div>
+                  </div>
+                </div>
+                  <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Jaisingh Nageswaran | <i>The Land That Is No More 2002-2004</i></p>
+                    </div>
+                  </div>
+                </div>
+                  <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><i>Rahamaria Archives Ongoing Series</i></p>
+                    </div>
+                  </div>
+                </div>
+              
+                
+                  
+
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img7.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><i>29, Empty Your Cup Ongoing Series</i></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img8.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><i>29, Empty Your Cup Ongoing Series</i></p>
+                    </div>
+                  </div>
+                </div>
+                
+              
+                
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img9.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Jaisingh Nageswaran | <i>The Land That Is No More 2002-2004</i></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img10.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Soumya Sankar Bose | <i>Jatra, Ongoing Series</i></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img11.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Jaisingh Nageswaran | <i>The Land That Is No More 2002-2004</i></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img12.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><i>29, Empty Your Cup Ongoing Series</i></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img13.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p><i>29, Empty Your Cup Ongoing Series</i></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img14.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Jaisingh Nageswaran | <i>The Land That Is No More 2002-2004</i></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/Highly Grainy/img15.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                    <div class="card-body">
+                      <p>Dayanita Singh | <i>Zakir Hussain Maquette</i></p>
+                    </div>
+                  </div>
+                </div>
+              
+                <!-- Add more cards -->
+              </div>
+            </div>
+
+            <!-- I Distintcly Remember -->
+            <div class="tab-pane fade" id="a2024" role="tabpanel">
+              <div class="row g-4">
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Conversation of Species.1.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Akshay Maiti | <i>Conservation of Species</i></p>
+                      <p>Engobe On Terracotta | Variable | 2024</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Fragments of Catastrophe.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Swathi Bheemani | <i>Fragments of Catastrophe</i></p>
+                      <p>Charcoal Carvings | Dimensions variable | 2022</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Group Up II.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Tufan Pramanik | <i>Grow Up II</i></p>
+                      <p>Poster Colour & Charcoal On Paper (Made By Collected Paddy Trees From The Spot) | 48 x 36 inches | 2021</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Group Up IV.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Tufan Pramanik | <i>Grow Up IV</i></p>
+                      <p>Pen & Poster Colour On Paper | 22 x 30 inches | 2022</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Group Up V.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Tufan Pramanik | <i>Grow Up V</i></p>
+                      <p>Charcoal & Pen On Paper | 28 x 40 inches | 2022</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Image.2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Mrudula Kunatharaju | <i>Dual Realities</i></p>
+                      <p>Water Colour, And Tea Tone on Paper Unit of 2 works: 5.8 x 8.26 (each) inches  | 2024</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Image.4 (1).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Prakruti Maitri | <i>I Want to Say Something. I Can't Say It Alone.</i></p>
+                      <p>Gulmohar Seeds, Cotton Thread | Variable (Interactive/wearable) | 2024</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Image.4.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Tufan Pramanik | <i>Grow Up VIII</i></p>
+                      <p>Colours Made From Natural Materials, Image | 22 x 10 inches (each) | 2022</p>
+                    </div>
+                  </div>
+                </div> <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Old and old Memories.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Tufan Pramanik | <i>Old and Old Memories</i></p>
+                      <p>Enamel Colour And Pen On Iron Sheet | 36 x 60 inches | 2020-2023</p>
+                    </div>
+                  </div>
+                </div> 
+            
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Rest, but radically.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Prakruti Maitri | <i>Rest, but Radically</i></p>
+                      <p>Terracotta, Jute Thread, Cotton Pillows | 120 x 108 x 124 inches | 2024</p>
+                    </div>
+                  </div>
+                </div> <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Tangible Reality.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Mrudula Kunatharaju | <i>Tangible Reality</i></p>
+                      <p>Water Colour, Graphite Pencil and Tea Tone on Paper, And Rusted Iron Unit of 2 works: 53.9 x 77.9, 96 x 2.7 x 1.1 inches | 2024</p>
+                    </div>
+                  </div>
+                </div> <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/The Beginning and the end.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Mrudula Kunatharaju | <i>The Beginning and the End</i></p>
+                      <p>Water Colour, Graphite Pencil, Bleached Cyanotype and Tea Tone on Paper, Rusted Iron and Fiber Glass Unit of 4 works: 22.04 x 28.4 (each), 8.26 x 5.8, 8.74 x 8.66 x 5.11 inches | 2024</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/The things we carry, the things we discard.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Mrudula Kunatharaju | <i>The Things We Carry, the Things We Discard.</i></p>
+                      <p>Watercolour, Pigment And Tea-Tone On Paper | 29.7 x 42 inches | 2024</p>
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Towards the same endpoint.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Mrudula Kunatharaju | <i>Towards the Same Endpoint</i></p>
+                      <p>Watercolour, Dry-Pastel Pencil And Charcoal | 14.8 X 21 inches | 2024</p>
+                    </div>
+                  </div>
+                </div>
+                      <div class="col-md-4 col-sm-6">
+                  <div class="card h-100">
+                    <img src="images/past exhibitions/2024/I Distinctly Remember/Wounds of Relief.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                    <div class="card-body">
+                      <p>Mrudula Kunatharaju | <i>Wounds of Relief</i></p>
+                      <p>Watercolour, Graphite Pencil And Tea-Tone On Paper | 21 x 14.8 inches | 2024</p>
+                    </div>
+                  </div>
+                </div>
+                <!-- Add more woodcut artworks -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+
+<div class="tab-pane fade" id="y2023" role="tabpanel">
+  <div class="container-fluid mt-4">
+  <!-- Scrollable Year Tabs -->
+  <div class="scroll-container ">
+    <ul class="nav" id="yearTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link year exhibition-contemporary active" id="p2023-tab" data-bs-toggle="tab" data-bs-target="#p2023" type="button" role="tab">In Defense of Intuition</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year exhibition-contemporary" id="R2023-tab" data-bs-toggle="tab" data-bs-target="#R2023" type="button" role="tab">Keep It Real</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year exhibition-artspace" id="a2023-tab" data-bs-toggle="tab" data-bs-target="#a2023" type="button" role="tab">Land of the Leal</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year exhibition-artspace" id="b2023-tab" data-bs-toggle="tab" data-bs-target="#b2023" type="button" role="tab">Low Volume</button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Content Area -->
+  <div class="tab-content mt-4" id="yearTabsContent">
+
+    <!-- In Defense of Intution -->
+    <div class="tab-pane fade show active" id="p2023" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/img1.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+            <div class="card-body">
+              <p>Meghana Gavireddygari | <i>Never Sets</i></p>
+              <p>Mixed Media Paper | 18 x 24 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/img2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Astha Butail | <i>Ten Directions</i></p>
+              <p>Wooden Drawers, A Set Of Instructions, Paper Cards, Wooden Planks | variable in situ | 2016</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/DSC00096.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Chris Basumatary | <i>Drenched In</i></p>
+              <p>Knitting Needles, Concrete, Acrylic And Polyurethane Varnish | 10 x 8.5 x 5 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/IMG_7838.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Parul Gupta | <i>Movement #135</i></p>
+              <p>Ink On Hot Press Paper | 66 x 56 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/IMG_7839.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Parul Gupta | <i>Movement #134</i></p>
+              <p>Ink On Hot Press Paper | 66 x 56 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/img.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Srishti Rana Menon | <i>Equilibria - II</i></p>
+              <p>Acrylic On Canvas | 48 x 48 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/IMG_20230816_130045.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Asim Waqif | <i>Crunch Analysis</i></p>
+              <p>Cyanotype Photogram On Galvanised Steel | 48 x 64 x 14 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/Untitled-2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yash Desai | <i>Untitled</i></p>
+              <p>Powder Pigment And Ink | Variable sizes | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/imhz.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Pen & Ink On Paper | 24 x 24 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/abcds.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Pen & Ink On Paper | 18 x 18 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+        
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/Work.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shruti Mahajan | <i>Post (1)</i></p>
+              <p>Prisma Colour Pencil Drawing On Paper Collage | 148.8 x 49.4 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/In Defense of Intuition/Work.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shruti Mahajan | <i>Post (2)</i></p>
+              <p>Prisma Colour Pencil Drawing On Paper Collage | 17.7 x 22.2 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!-- Keep it real-->
+    <div class="tab-pane fade" id="R2023" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/0037.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Deena Pindoria | <i>Untitled</i></p>
+              <p>Natural Dye On Cotton Cloth | 43 x 33 inches | 2022-23</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/0038.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Deena Pindoria | <i>Untitled</i></p>
+              <p>Natural Dye On Cotton Cloth | 35.5 x 108 inches | 2022-23</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/DSC_0226.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Deena Pindoria | <i>Untitled</i></p>
+              <p>Natural Dye On Cotton Cloth | 22 x 16 inches (each) | 2022-23</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/DSC_0119.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shanthi Swaroopini | <i>Reflecting.....</i></p>
+              <p>Patinated Brass | 20 x 16 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/DSC_0259.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Untitled</i></p>
+              <p>Re-used Wood (Hard Sal Wood) | 28 x 9 x 2.5 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/DSC_3145_00001.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Untitled</i></p>
+              <p>Re-used Wood | 13 Ft | 2023</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/Image.1_1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anjaneyulu G | <i>Untitled</i></p>
+              <p>Oil On Canvas | 48" x 48' | 2023</p>
+            </div>
+          </div>
+        </div>
+        
+       
+        
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/Image.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anjaneyulu G | <i>Untitled</i></p>
+              <p>Oil On Canvas | 48 x 48 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/Image.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Tauseef Khan | <i>Untitled</i></p>
+              <p>Oil On Canvas | 52 x 66 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/Image.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Tauseef Khan | <i>Untitled</i></p>
+              <p>Oil On Canvas | 52 x 66 inches | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/Image.3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Namrata Arjun | <i>Playing God IV</i></p>
+              <p>Oil On Panel | 20 x 16 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/Image.4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Namrata Arjun | <i>Playing God I</i></p>
+              <p>Oil On Panel | 12 x 12 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/intangible conversation.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Harun Al Rashid | <i>Intangible Conversations</i></p>
+              <p>Watercolour, Coffee & Thread On Paper | 7 x 10 inches (each), set of 10 | 2023</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/Lockdown 2007.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Harun Al Rashid | <i>Lockdown</i></p>
+              <p>Watercolour, Coffee & Thread On Paper | 5 x 8 inches (each), set of 8 | 2021</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/PHOTO-2021-08-04-08-18-27 372.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Akhil Mohan | <i>Rice 10</i></p>
+              <p>Pen And Ink On Paper | 59.5 x 47.24 inches | 2016</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/Umbrella.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Swathi Bheemani | <i>Fragments of a Catastrophe</i></p>
+              <p>Charcoal And Wood Carvings | 31 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+      
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Keep it Real/VB113-image.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Vikrant Bhise | <i>The Rise of Protests 13</i></p>
+              <p>Oil On Canvas | 30.5 x 71.1 cm | 12 x 28 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!-- Land of the Leal 2023 -->
+    <div class="tab-pane fade" id="a2023" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/arjun , sedentary .jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscure from the Mire V</i></p>
+              <p>Collected Wood | 20.3 x 221 x 12.7 cm | 8 x 87 x 5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+
+       
+       
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/DSC_0780.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>Untitled</i></p>
+              <p>Wood | 58.4 x 25.4 x 12.7 cm | 23 x 10 x 5 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>Sedentary-Ll</i></p>
+              <p>Re-used Wood | 96.5 x 21.6 x 7.6 cm | 38 x 8.5 x 3 inches | 2022</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>M.m 3 . 2009</i></p>
+              <p>Re-used Wood | 111.76 x 86.3 x 7.6 cm | 44 x 34 x 3 inches | 2022</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/3.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>Chaupai</i></p>
+              <p>Re-used Wood | 76.2 x 43.1 x 111.7 cm | 30 x 17 x 44 inches | 2022</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/4.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>A Moment of Glory</i></p>
+              <p>Mahogany Wood | 55.8 x 43.2 x 6.3 cm | 22 x 17 x 2.5 inches | 2022</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/5.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscured Stories- IV</i></p>
+              <p>: Re-used Wood | 99 x 25.4 x 7.6 cm | 39 x 10 x 3 inches | 2022</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/6.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscured Stories- V</i></p>
+              <p>Re-used Wood | 21.6 x 8.9 x 7.6 cm | 8.5 x 9 x 3 inches | 2022</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/Traces.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>Traces-Ll</i></p>
+              <p>Brass,wood And Collected Asphalt From Site | Variable sizes (installation area 192 in) | 2022</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Land of the Leal/Untitled-2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscured Stories-LLL</i></p>
+              <p>Collected Wood From The Site | From left: 27.9 x 22.8 x 6.3 inches | 11 x 9 x 2.5 inches 33 x 22.8 x 6.3 inches | 13 x 9 x 2.5 inches 43 x 22.8 x 6.3 inches | 17 x 9 x 2.5 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+       
+
+        <!-- Add more woodcut artworks -->
+      </div>
+    </div>
+
+    <!-- Low Volume 2023 -->
+    <div class="tab-pane fade" id="b2023" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Low Volume/1.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+            <div class="card-body">
+              <p>Pallov Saikia | <i>Rahmaria Series</i></p>
+              <p>Archival Print On Epson Matt Paper | 16.5 x 23.4 inches (Edition of 5) | 2021-23</p>
+            </div>
+          </div>
+        </div>
+
+       
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Low Volume/6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Pallov Saikia | <i>Rahmaria Series</i></p>
+              <p>Archival Print On Epson Matt Paper | 23.4 x 33.1 inches | Edition of 5 | 2021-23</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Low Volume/2b6e3738-f8e7-45ea-9f04-a19186b1974d.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shivangi Ladha | <i>Traversing (Red Series)</i></p>
+              <p>Etching; Aquatint On Hahnemuhle Paper | 27 x 42 1/8 inches | Edition of 2+2 | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Low Volume/8.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Pallov Saikia | <i>Rahmaria Series</i></p>
+              <p>Archival Print On Epson Matt Paper | 16.5 x 23.4 inches | Edition of 5 | 2021-23</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Low Volume/14.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Pallov Saikia | <i>Rahmaria Series</i></p>
+              <p>Archival Print On Epson Matt Paper | : 23.4 x 33.1 inches | Edition of 5 | 2021-23</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Low Volume/Installation.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Deepak Kumar | <i>Fluttering Hope</i></p>
+              <p>Mixed Media | 92 x 32 inches approx. | 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Low Volume/Installation.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Deepak Kumar | <i>The Native Grassland</i></p>
+              <p>Acrylic And Oil On Canvas | 48 x 72 inches | : 2023</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2023/Low Volume/Invisible cities_10 (HD image).1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Puja Mondal | <i>Invisible Cities</i></p>
+              <p>Watercolor On Etching Prints | 14 x 9 inches | 2016</p>
+            </div>
+          </div>
+        </div>
+        
+        
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+    </div>
+    <div class="tab-pane fade" id="y2022" role="tabpanel">
+      <div class="container-fluid mt-4">
+  <!-- Scrollable Year Tabs -->
+  <div class="scroll-container ">
+    <ul class="nav" id="yearTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link year active" id="p2022-tab" data-bs-toggle="tab" data-bs-target="#p2022" type="button" role="tab">A Portrait of the Land</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="R2022-tab" data-bs-toggle="tab" data-bs-target="#R2022" type="button" role="tab">Brushmark on Architecture</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="a2022-tab" data-bs-toggle="tab" data-bs-target="#a2022" type="button" role="tab">Crafting the Crossroad</button>
+      </li>
+     
+    </ul>
+  </div>
+
+  <!-- Content Area -->
+  <div class="tab-content mt-4" id="yearTabsContent">
+
+    <!-- A potrait of The Land -->
+    <div class="tab-pane fade show active" id="p2022" role="tabpanel">
+      <div class="row g-4">
+        <!-- Example card -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Pallov Saikia | <i>Rahmaria</i></p>
+              <p>Archival Print | 11.6 x 16.5 inches | 2017 - 2021</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/2.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Pallov Saikia | <i>Rahmaria</i></p>
+              <p>Archival Print | 11.6 x 16.5 inches | 2017 - 2021</p>
+            </div>
+          </div>
+        </div>
+
+       
+        
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/3.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+               <p>Pallov Saikia | <i>Rahmaria</i></p>
+               <p>Archival Print | 11.6 x 16.5 inches | 2017 - 2021</p>
+            </div>
+          </div>
+        </div>
+
+       
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/5.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+                <p>Pallov Saikia | <i>Rahmaria</i></p>
+                <p>Archival Print | 11.6 x 16.5 inches | 2017 - 2021</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/7.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+                <p>Pallov Saikia | <i>Rahmaria</i></p>
+                <p>Archival Print | 11.6 x 16.5 inches | 2017 - 2021</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/3.Title-Inverted Medium-Ink on paper _ textile, Size- 12_ x 12_ ,Year-2020.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Meghana Patpatia | <i>Inverted</i></p>
+              <p>Ink On Paper & Textile | 12 x 12 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/4. Title-Where to now, Size-12_ x 12_, Medium-Ink on paper,textile Dated, March,2019.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Meghana Patpatia | <i>Inverted</i></p>
+              <p>Ink On Paper & Textile | 12 x 12 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/DSC_0696 copy.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Leena Raj | <i>Promise</i></p>
+              <p>Acrylic On Canvas | 24 x 30 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/DSC_0700.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Leena Raj | <i>Wounded Angel</i></p>
+              <p>Acrylic On Canvas | 24 x 30 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/IMG_9251.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Leena Raj | <i>Instinct of Survival</i></p>
+              <p>Acrylic On Canvas | 36 x 24 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/IMG_9259.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Leena Raj | <i>Hiraeth</i></p>
+              <p>Acrylic On Canvas | 66 x 48 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Khoai landscape 1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Ghana Shyam Latua | <i>Khoai Landscape 1</i></p>
+              <p>Pen, Ink And Pin-work On Paper | 10 x 16.5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Khoai landscape 2.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Ghana Shyam Latua | <i>Khoai Landscape 2</i></p>
+              <p>Pen, Ink And Pin-work On Paper | 10 x 16.5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Khoai landscape 3.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Ghana Shyam Latua | <i>Khoai Landscape 3</i></p>
+              <p>Pen, Ink And Pin-work On Paper | 10 x 16.5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Khoai landscape 4.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Ghana Shyam Latua | <i>Khoai Landscape 4</i></p>
+              <p>Pen, Ink And Pin-work On Paper | 10 x 16.5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Khoai landscape 5.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+               <p>Ghana Shyam Latua | <i>Khoai Landscape 5</i></p>
+               <p>Pen, Ink And Pin-work On Paper | 10 x 16.5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Khoai landscape 6.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+             <p>Ghana Shyam Latua | <i>Khoai Landscape 6</i></p>
+             <p>Pen, Ink And Pin-work On Paper | 10 x 16.5 inches | 2020</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Khoai landscape 7.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Ghana Shyam Latua | <i>Khoai Landscape 7</i></p>
+              <p>Pen, Ink And Pin-work On Paper | 10 x 16.5 inches | 2020</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Khoai landscape 8.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Ghana Shyam Latua | <i>Khoai Landscape 8</i></p>
+              <p>Pen, Ink And Pin-work On Paper | 10 x 16.5 inches | 2020</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/Man Full.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Sujuth SN | <i>Untitled</i></p>
+              <p>Watercolor On Paper | 50 x 30 inches | 2020</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/sujitha1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Sujith SN | <i>Prelude</i></p>
+              <p>Watercolor On Paper | 11.5 x 14 inches | 2021</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/sujitha 2.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Sujith SN | <i>Prelude</i></p>
+              <p>Watercolor On Paper | 11.5 x 14 inches | 2021</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/sujitha3.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Sujith SN | <i>Prelude</i></p>
+              <p>Watercolor On Paper | 11.5 x 14 inches | 2021</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/A Portrait of the Land/sujitha4.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Sujith SN | <i>Prelude</i></p>
+              <p>Watercolor On Paper | 11.5 x 19 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+        <!-- Add more cards here -->
+      </div>
+    </div>
+
+    <!-- Brush mark on arcituere -->
+    <div class="tab-pane fade" id="R2022" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Elements II</i></p>
+              <p>Stoneware Ceramics | 18 x 12 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Elements III</i></p>
+              <p>Anagama Fired Stoneware, Porcelain | 12 x 4 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Elements IV</i></p>
+              <p>Anagama Fired Stoneware, Porcelain | 12 x 4 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Element V</i></p>
+              <p>Porcelain | 6 x 6 x 6 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/space and elements 1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Elements I</i></p>
+              <p>Stoneware Ceramics | 23 x 10 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/A Day In Burgdorf.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Jignesh Panchal | <i>'A Day in Burgdorf'</i></p>
+              <p>Paper Cutting | 15.74 x 12.82 inches (each) | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/Artwork_Sangam_Vankhade.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sangam Vankhande | <i>Fort</i></p>
+              <p>Metal And Wood | 36 x 36 x 12 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/door.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+            <p>Sumakshi Singh | <i>Untitled</i></p>
+            <p>Thread And Lace Drawing | 93 x 43 inches | 2020</p>
+          </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/doorway.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sumakshi Singh | <i>Untitled</i></p>
+              <p>Thread Drawing An Embroidery On Fabric | 33 x 45 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/window.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sumakshi Singh | <i>Untitled</i></p>
+              <p>Thread Drawing An Embroidery On Fabric | 33 x 41 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/virasat1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Narayan Biswas | <i>Virasat V</i></p>
+              <p>Iron | 7 x 51.5 x 27 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/virasat2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Narayan Biswas | <i>Virasat VI</i></p>
+              <p>Iron | 22.5 x 22.5 x 37 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/virasat3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Narayan Biswas | <i>Virasat VII</i></p>
+              <p>Iron | 6 x 44.5 x 19 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/sangam1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sangam Vankhande | <i>Untitled</i></p>
+              <p>Acid-free Thick Paper Cutting | 22 x 22 inches (each) | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/sangam2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sangam Vankhande | <i>'Barav'</i></p>
+              <p>Acid-free Thick Paper Cutting Work | 20 x 30 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/sangam3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sangam Vankhande | <i>Tower</i></p>
+              <p>Marble And Resin | 35 x 15 x 14 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/sangaam4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anil Thambai | <i>Every Plan Is a Plan 02</i></p>
+              <p>Graphite On Multi-color Sunhemp Paper Over Wood Panel | 54 x 24 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/anil1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anil Thambai | <i>The Details Are Not Details They Make the Shades-02</i></p>
+              <p>Graphite On Multi-color Sunhemp Paper Over Wood Panel | 24 x 18 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/anil2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anil Thambai | <i>The Details Are Not Details They Make the Shades-03</i></p>
+              <p>Graphite On Multi-color Sunhemp Paper Over Wood Panel | 24 x 18 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/anil3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anil Thambai | <i>The Details Are Not Details They Make the Shades-01</i></p>
+              <p>Graphite On Multi-color Sunhemp Paper Over Wood | 24 x 18 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Brushmark on Architecture/anil4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anil Thambai | <i>Every Plan Is a Plan</i></p>
+              <p>Graphite On Multi-color Sunhemp Paper Over Wood Panel | 54 x 24 inches | 2022</p>
+            </div>
+          </div>
+        </div>
+      
+        
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!-- Craftin the cross road -->
+    <div class="tab-pane fade" id="a2022" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/chaturi1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Chathuri Nissansalla | <i>St. Mary's Church, Biyagama-II</i></p>
+              <p>Mixed Media, Including Plaster Of Paris, Glass And & Beads, Cloth And Tea Filter Paper | 4.72 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+
+       
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/chatuhri2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Chathuri Nissansalla | <i>ST. Anthony's Church, Kochchikade, Colombo- II, </i></p>
+              <p>Mixed Media, Including Plaster Of Paris, Glass And & Beads, Cloth And Tea Filter Paper | 8.27 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/chathuri3.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Chathuri Nissansalla | <i>St. Anthony's Church, Kochchikade, Colombov</i></p>
+              <p>Mixed Media Including Plaster Of Paris, Glass & Plastic Beads And Cloth | 5.51 inches (H) | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/chathuri4.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Chathuri Nissansalla | <i>SRI Medhankara Temple, Dehiwala, Colombo</i></p>
+              <p>Mixed Media Including Plaster Of Paris, Glass, Glass & Plastic Beads And Cotton Cloth | 3.54 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/shruthi1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Chathuri Nissansalla | <i>St. Sebastian Statue, Wattala and Negombo</i></p>
+              <p>Mixed Media - Including Plaster Of Paris, Porcelain Glass And & Beads, Cloth And Tea Filter Paper | 4.53 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/shruthi2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Shruthi Mahajan | <i>Noon (Notes on Weaving)</i></p>
+              <p>Collage Made With Butter Paper And Pasted On Mount Board | 12 x 27 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/shruthi3.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Shruthi Mahajan | <i>Field</i></p>
+              <p>Patch Work Fabric | 44 x 44 inches (L x B) | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/shruthi4.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Shruthi Mahajan | <i>Day and Night (Notes on Weaving)</i></p>
+              <p>Collage Made By Ball Pen Drawing On Butter Paper Pasted On Mount Board | 24 x 27 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/shruthi5.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Shruthi Mahajan | <i>Drawing - (Notes on Weaving)</i></p>
+              <p>Drawing Collage,Medium, Ball Pen And Charcoal On Acid-Free Paper | 8.87 x 8.87 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/shruthi6.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Shruthi Mahajan | <i>Field I</i></p>
+              <p>Drawing And Patchwork With Woven Cotton Fabrics | 11 x 11.5 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/Again detail I.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Rajarshi Sengupta | <i>Again</i></p>
+              <p>Fermented Black Dye, Manjistha And Sappanwood On Treated Handwoven Cotton, Hand-sewn Into Cushion Cover | 16 x 16 inches (set of 2 Cushion Covers) | 2022</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/Catalogue mountain.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Rajarshi Sengupta | <i>Catalogue Mountain</i></p>
+              <p>Fermented Black Dye, Catechu And Pomegranate Skin On Treated Handwoven Cotton | 49 x 66.5 inches | 2020-21</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/Kaluva_Puranamu.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Rajarshi Sengupta | <i>Kaliva Puranam</i></p>
+              <p>Fermented Black Dye, Pomegranate Skin And Indigo On Treated Handwoven Cotton | 25 x 34 inches | 2019-20</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/World at the Tableposh.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Rajarshi Sengupta | <i>World at the Table-Posh</i></p>
+              <p>Fermented Black Dye, Pomegranate Skin And Embroidery On Treated Handwoven Cotton | 44 x 65 inches (with mounting) | 2020-21</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2022/Crafting the Crossroad/SUSANN~2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Susanna Bauer | <i>Moon</i></p>
+              <p>Magnolia Leaf, Cotton Thread | 30 x 22 inches (framed) | 2022</p>
+            </div>
+          </div>
+        </div> 
+
+        <!-- Add more woodcut artworks -->
+      </div>
+    </div>
+  </div>
+</div>
+
+    </div>
+    <div class="tab-pane fade" id="y2021" role="tabpanel">
+    <div class="container-fluid mt-4">
+  <!-- Scrollable Year Tabs -->
+  <div class="scroll-container ">
+    <ul class="nav" id="yearTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link year active" id="p2021-tab" data-bs-toggle="tab" data-bs-target="#p2021" type="button" role="tab">Allegories of Thread</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="R2021-tab" data-bs-toggle="tab" data-bs-target="#R2021" type="button" role="tab">Of fire and Earth</button>
+      </li>
+     
+     
+    </ul>
+  </div>
+
+  <!-- Content Area -->
+  <div class="tab-content mt-4" id="yearTabsContent">
+
+    <!-- Ones Own World -->
+    <div class="tab-pane fade show active" id="p2021" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.1.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+            <div class="card-body">
+                <p>Gozde Ilkin | <i>Liberated Roots</i></p>
+                <p>Applique, Stitching And Painting On Found Fabric | 87 x 45 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         
+       
+      
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.1 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sharmistha Kar | <i>Soft Shelter- Tabernacle and Hope</i></p>
+              <p>Bunka And Hand Embroidery On Layered Fabric | 45 x 17 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.1 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shruti Mahajan | <i>Untitled |||</i></p>
+              <p>Stitching And Drawing On Acid-free Paper | 11 x 15 inches | 2012</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.1 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sumana Som | <i>The Landlord</i></p>
+              <p>Drawing With Coffee And Tea Stain Mix, Pencil, Ink, Stitch With Pink Pearl On Fabric | 42 x 49 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.2 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sharmistha Kar | <i>Soft Shelter I</i></p>
+              <p>Bunka And Hand Embroidery On Fabric | 36 x 40 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.2 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shruti Mahajan | <i>Untitled II</i></p>
+              <p>Stitching And Drawing On Acid-free Paper | 30 x 40 inches | 2012</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.2 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sumana Som | <i>Piece of Land</i></p>
+              <p>Pencil, Ink, Stitch And Mirror Work On Fabric | 16 x 39 inches | 2010</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Gozde Ilkin | <i>Kingdom</i></p>
+              <p>Stitching And Painting On Fabric Dyed With Plant Extracts | 31 x 74 inches | 2016</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.3 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sharmistha Kar | <i>Soft Shelter IV</i></p>
+              <p>Bunka Needle Work On Tarpaulin Sheet | 86 x 109 inches</p>
+
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.3 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shruti Mahajan | <i>Untitled |</i></p>
+              <p>Stitching And Drawing On Acid-free Paper | 30 x 40 inches | 2012</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Gozde Ilkin | <i>Escape Dance</i></p>
+              <p>Stitching And Painting | 22 x 26 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.4 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shruti Mahajan | <i>Will ||</i></p>
+              <p>Applique With Different Kinds Of Tussar And Silk Fabric | 23 x 17 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sharmistha Kar | <i>The Monolithic Boat</i></p>
+              <p>Bunka And Hand Embroidery On Fabric | 35 x 83 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+        
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shruti Mahajan | <i>Will III, IV, V</i></p>
+              <p>Charcoal And Pencil Drawing On Digital Print | 11 x 8 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Image.6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shruti Mahajan | <i>Will I</i></p>
+              <p>Acrylic And Charcoal On Acid-free Paper | 28 x 41 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Allegories of Thread/Neighbour.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sumana Som | <i>Neighbour</i></p>
+              <p>Ink, Pencil And Different Kinds Of Stitch With Black, Pink And White Rice Pearl On Fabric | 48 x 48 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!-- of Fire and Earth -->
+    <div class="tab-pane fade" id="R2021" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.2 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Rahul Kumar | <i>Original Shadow 5</i></p>
+              <p>Stoneware Clay | 10 x 11 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.2 (4).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Rekha Goyal | <i>Lunar</i></p>
+              <p>Ceramic Art Tiles | Dia. 6 inches (each)</p>
+             
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.1 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Rekha Goyal | <i>The Moods of Water</i></p>
+              <p>Ceramic Art Tiles | 6 x 6 inches each | 2018</p>
+             
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.3 (4).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Rekha Goyal | <i>The Memory of Water</i></p>
+              <p>Ceramic Art Tiles | 6 x 6 inches (each) | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.2 (5).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shirley Bhatnagar | <i>3 Politicians</i></p>
+              <p>Porcelain | 4 x 12 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.3 (5).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Shirley Bhatnagar | <i>Rangey Hatoon Pakadna</i></p>
+              <p>Porcelain | 6 x 13 x 6 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.1 .jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Loganathan E. | <i>Traditional Pathway</i></p>
+              <p>Ceramic & Wood | 15 x 10 x 10 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.2 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Loganathan E. | <i>Power of Living with Nature</i></p>
+              <p>Ceramic & Stainless Steel | 32 x 16 x 14 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+         
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.3 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+               <p>Loganathan E. | <i>Secret with Snail</i></p>
+               <p>Ceramic | 12 x 14 x 9 inches | 2021</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.4 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Loganathan E. | <i>Nature Living with Us</i></p>
+              <p>Stoneware | 23 x 14 x 10.5 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.1 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mudita Bhandari | <i>Fragments</i></p>
+              <p>Terracotta (Fired At 110° C) Iron , Cement | 6 x 17 x 8 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+      
+         
+          
+
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.2 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mundita Bhandari | <i>Meanderings Series</i></p>
+              <p>Terracotta (Fired At 110° C) | 10 x 10 x 10 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.3 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mundita Bhandari | <i>Walls of the Same Circle</i></p>
+              <p>Terracotta (Fired At 110° C) | 8 x 10 x 10 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        
+       
+        
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.3 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Rahul Kumar | <i>Orginal Shadow 6</i></p>
+              <p>Stoneware Clay | 10 x 11 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.4 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Rahul Kumar | <i>Original Shadow 3</i></p>
+              <p>Stoneware Clay | 10 x 11 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.1 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Rahul Kumar | <i>Orginal Shadow 7</i></p>
+              <p>Stoneware Clay | 10 x 11 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.1 (5).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Subhankar Das | <i>Time</i></p>
+              <p>Ceramic Stoneware, Wood | 24 x 14 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.2 (6).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Subhankar Das | <i>Nature</i></p>
+              <p>Ceramic Stoneware | 12 x 12 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.3 (6).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+             <p>Subhankar Das | <i>Nature</i></p>
+             <p>Ceramic Stoneware, Glass, Wood | 23 x 12 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Elements - 1</i></p>
+              <p>Porcelain | 8 x 7 x 4 inches</p>
+             
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Elements - 3</i></p>
+              <p>Porcelain | 9 x 6 x 4 inches</p>
+             
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Elements - 1</i></p>
+              <p>Porcelain | 12 x 4 inches</p>
+             
+            </div>
+          </div>
+        </div>
+      
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2021/Of Fire and Earth/Image.4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Falguni Bhatt | <i>Space & Elements - 1</i></p>
+              <p>Porcelain | 6 x 6 x 6 inches</p>
+            
+            </div>
+          </div>
+        </div>
+        <!-- Add more cards -->
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+    <div class="tab-pane fade" id="y2020" role="tabpanel">
+      <div class="container-fluid mt-4">
+  <!-- Scrollable Year Tabs -->
+  <div class="scroll-container ">
+    <ul class="nav" id="yearTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link year active" id="p2020-tab" data-bs-toggle="tab" data-bs-target="#p2020" type="button" role="tab">A Letter from My Homeland</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="R2020-tab" data-bs-toggle="tab" data-bs-target="#R2020" type="button" role="tab">Metaphor-The Magic It Holds</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="a2020-tab" data-bs-toggle="tab" data-bs-target="#a2020" type="button" role="tab">New Stories in Old Frames</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="b2020-tab" data-bs-toggle="tab" data-bs-target="#b2020" type="button" role="tab">Featured in Onart Fair</button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Content Area -->
+  <div class="tab-content mt-4" id="yearTabsContent">
+
+    <!-- A Letter From MY Homeland  -->
+    <div class="tab-pane fade show active" id="p2020" role="tabpanel">
+      <div class="row g-4">
+        <!-- Example card -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/1_1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Pallov Saikia, India</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Rahmaria-2020-1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Pallov Saikia, India</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Abdul Musawir Shabbir, Pakistan</p>
+            </div>
+          </div>
+        </div>
+        
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/2 (1).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Pallov Saikia, India</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/2.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Binaya Humagain, Nepal</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/3.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Pallov Saikia, India</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/4.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Binaya Humagain, Nepal</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/5.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Binaya Humagain, Nepal</p>
+            </div>
+          </div>
+        </div>
+        
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/7.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Binaya Humagain, Nepal</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/8.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Binaya Humagain, Nepal</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/9.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Binaya Humagain, Nepal</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/10.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Binaya Humagain, Nepal</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (1).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (2).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (3).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (4).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (5).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (6).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (7).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (8).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (9).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Mohsen Sakha, Iran</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (10).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Naim Ul Hasan, Bangladesh</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (11).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Naim Ul Hasan, Bangladesh</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (12).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Naim Ul Hasan, Bangladesh</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/Image (13).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Naim Ul Hasan, Bangladesh</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/image 3.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Abdul Musawir Shabbir, Pakistan</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/image 5.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Abdul Musawir Shabbir, Pakistan</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/image 6.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Abdul Musawir Shabbir, Pakistan</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/image 7.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Abdul Musawir Shabbir, Pakistan</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/image 8.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Abdul Musawir Shabbir, Pakistan</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/image 9.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Abdul Musawir Shabbir, Pakistan</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/A Letter from My Homeland/image 10.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Abdul Musawir Shabbir, Pakistan</p>
+            </div>
+          </div>
+        </div>
+        
+         
+        <!-- Add more cards here -->
+      </div>
+    </div>
+
+    <!-- Metaphor The Magic it Holds 2020 -->
+    <div class="tab-pane fade" id="R2020" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Metaphor - The Magic it Holds/Image.1 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Subhankar Bag | <i>Objects Between Certain and Uncertain Moments</i></p>
+              <p>Wood, Metal Pins And White Coat | Variable | 2019</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Metaphor - The Magic it Holds/Image.2 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+             <p>Subhankar Bag | <i>Untitled</i></p>
+             <p>Wood, Metal Wire And White Coat | Variable | 2019</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Metaphor - The Magic it Holds/Image.3 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Subhankar Bag | <i>Untitled</i></p>
+              <p>Wood And White Coat | Variable | 2019</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Metaphor - The Magic it Holds/Image.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscure From The Mire</i></p>
+              <p>Wood | 16 x 17 x 3 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Metaphor - The Magic it Holds/Image.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscure From The Mire</i></p>
+              <p>Wood | 8 x 87 x 5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Metaphor - The Magic it Holds/Image.3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscure From The Mire</i></p>
+              <p>Wood | Variable | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Metaphor - The Magic it Holds/Image.4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscure From The Mire</i></p>
+              <p>Wood | 87 x 87 x 87 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Metaphor - The Magic it Holds/Image.4 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ajith A S | <i>Untitled</i></p>
+              <p>Ink And Watercolour On Found Paper | Variable | 2019</p>
+            </div>
+          </div>
+        </div>
+      
+         
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!-- New Stories in OLd Frames -->
+    <div class="tab-pane fade" id="a2020" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/1 (1).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Poushali Das | <i>Tales from Letter</i></p>
+              <p>Tempera On Wasli Paper | 6 x 15 inches (each) set of 5 | 2015</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/1 (2).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Two Images</i></p>
+              <p>Gouache And Newspaper Collage On Rice Paper | 19.5 x 19.5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/1 (3).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Sanket Viramgami | <i>Dancing Girls</i></p>
+              <p>Acrylic On Canvas | 48 x 48 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Mainaz Bano | <i>Online Window Shopping</i></p>
+              <p>Mixed Media On Canvas | 18 x 72 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/2 (1).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Observation of a Pandemic Looker</i></p>
+              <p>Gouache And Newspaper Collage On Rice Paper | 28 x 19.5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/2 (2).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Sanket Viramgami | <i>Jungle Queen in the Urban Spaceâ€™</i></p>
+              <p>Acrylic On Canvas | 30 x 30 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Mainaz Bano | <i>The Courtly Lucknow</i></p>
+              <p>Mixed Media On Canvas | 8 x 8 inches (each, set of 20) | 2018</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/3 (1).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Reminiscences of the Daily Musings III</i></p>
+              <p>Gouache And Newspaper Collage On Rice Paper | 10 x 49 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/3 (2).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Sanket Viramgami | <i>Untitled</i></p>
+              <p>Acrylic On Canvas | 60 x 60 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/3.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Mainaz Bano | <i>Dominion ||</i></p>
+              <p>Paper Collage, Ink And Acrylic On Canvas | 48 x 60 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/4 (1).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Reminiscences of the Daily Musings II</i></p>
+              <p>Gouache And Newspaper Collage On Rice Paper | 31 x 61 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/4.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Mainaz Bano | <i>Inheritance V</i></p>
+              <p>Gold Leaf, Varnish And Acrylic On Canvas | 43 x 41 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/5 (1).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Poushali Das | <i>Tales from Letter ||</i></p>
+              <p>Tempera On Wasli Paper | 13 x 8.5 inches (each, set of 2 ) | 2015</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/5 (2).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Corridors of Contemplation</i></p>
+              <p>Gouache On Rice Paper | 16 x 23 inches | 2020</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/5.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Mainaz Bano | <i>Inheritance |</i></p>
+              <p>Mixed Media On Canvas | 8 x 8 inches | 2019</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/Aniruddha.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Aniruddha Parit | <i>Time Pass</i></p>
+              <p>Acrylic On Board | 30 x 20 inches | 2014</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/Aniruddha.2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Aniruddha Parit | <i>Story of a Lost Kingdom</i></p>
+              <p>Tempera On Board | 16 x 12 inches | 2018</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/Aniruddha.3.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Aniruddha Parit | <i>Dharma Chakra</i></p>
+              <p>Tempera On Board | 22 x 28 inches | 2016</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/Aniruddha.4.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Aniruddha Parit | <i>Absence</i></p>
+              <p>Tempera On Board | 40 x 30 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/New Stories in Old Frames/Aniruddha.5.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Aniruddha Parit | <i>For Him and Her</i></p>
+              <p>Mixed Media On Board | 22 x 28 inches | 2015</p>
+            </div>
+          </div>
+        </div>
+       
+
+        <!-- Add more woodcut artworks -->
+      </div>
+    </div>
+
+    <!-- featured in on art fair -->
+    <div class="tab-pane fade" id="b2020" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.1 (1).jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+            <div class="card-body">
+              <p>Jagadeesh Tammineni | <i>The Birth of a Nation</i></p>
+              <p>Woodcut | 36 x 48 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+       
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.2 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Jagadeesh Tammineni | <i>The Birth of a Nation ||</i></p>
+              <p>Woodcut | 36 x 48 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.3 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+             <p>Jagadeesh Tammineni | <i>The Birth of a Nation ||</i></p>
+             <p>Woodcut | 36 x 48 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscure from the Mire ||</i></p>
+              <p>Wood | 5 x 87 x 8 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Mortgaged</i></p>
+              <p>Wood | 2.5 x 36 x 9 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+        
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscure from the Mire</i></p>
+              <p>Wood | 2.5 x 13 x 10 inches (each) | 2018</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>Obscure from the Mire |||</i></p>
+              <p>Wood | 2.5 x 13 x 10 inches (each) | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Arjun Das | <i>The Lost Lanes |||</i></p>
+              <p>Wood | 5 x 86 x 9 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.1 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Pen And Ink | 36 x 50 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.2 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Pen And Ink | 30 x 22 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.3 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Viscosity(intaglio) | 13 x 12 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.4 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Woodcut | 20 x 20 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+             <p>Murali Chinnasamy | <i>Untitled</i></p>
+             <p>Woodcut | 20 x 20 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.1 (4).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sumana Som | <i>Memory ||</i></p>
+              <p>Printograph, Relief Work With Cotton And Drawing On Kora Cloth | 48 x 84 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.2 (sold).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sumana Som | <i>Memory of a River</i></p>
+              <p>Printography And Drawing On Kora Cloth | 40 x 51 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.3 (4).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Sumana Som | <i>Piece of Sphere</i></p>
+              <p>Printograph And Drawing On Cotton Cloth | 40 x 17 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.4 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+             <p>Sumana Som | <i>Where They Are Leaving</i></p>
+             <p>Drawing On Rice Paper | 10 x 26 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.1 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Observation of a Pandemic Looker</i></p>
+              <p>Gouache And Newspaper Collage On Rice Paper | 28 x 19.5 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.2 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Corridors of Contemplation</i></p>
+              <p>Gouache On Rice Paper | 16 x 23 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.3 (3).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Reminiscences of the Daily Musings III</i></p>
+              <p>Gouache And Newspaper Collage On Rice Paper | 10 x 49 inches | 2020</p>
+            </div>
+          </div>
+        </div>
+
+         
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.4 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ravi Chunchula | <i>Reminiscences of the Daily Musings II</i></p>
+              <p>Gouache And Newspaper Collage On Rice Paper | 7.5 x 7 inches (each) | 2020</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2020/Featured in OnArt Fair -/Image.5 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+               <p>Ravi Chunchula | <i>Corridors of Contemplation II</i></p>
+               <p>Gouache On Canvas Layered With Rice Paper | 4 x 4 inches (each) | 2020</p>
+            </div>
+          </div>
+        </div>
+         
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+
+    </div>
+    <div class="tab-pane fade" id="y2019" role="tabpanel">
+     <div class="container-fluid mt-4">
+  <!-- Scrollable Year Tabs -->
+  <div class="scroll-container ">
+    <ul class="nav" id="yearTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link year active" id="p2019-tab" data-bs-toggle="tab" data-bs-target="#p2019" type="button" role="tab">A Journey Through Impermanence </button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="R2019-tab" data-bs-toggle="tab" data-bs-target="#R2019" type="button" role="tab">Enchanting Illusions</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="a2019-tab" data-bs-toggle="tab" data-bs-target="#a2019" type="button" role="tab">Infinite Parabolas</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="b2019-tab" data-bs-toggle="tab" data-bs-target="#b2019" type="button" role="tab">Microcosm Macrocosm</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="m2019-tab" data-bs-toggle="tab" data-bs-target="#m2019" type="button" role="tab">Minotaur: Beyond Myth</button>
+      </li>
+    </ul>
+  </div>
+
+  <!-- Content Area -->
+  <div class="tab-content mt-4" id="yearTabsContent">
+
+    <!-- A journey Through Impermanence -->
+    <div class="tab-pane fade show active" id="p2019" role="tabpanel">
+      <div class="row g-4">
+        <!-- Example card -->
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/26.01.2017-today.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Today</i></p>
+              <p>Rusting Iron Sheet And Impression On Paper | 6 x 13 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Landscape III copy.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Landscape 111</i></p>
+              <p>Iron Rust On Canvas | 3.4 x 5.7 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/landscape of khoai without name.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Landscape of Khoai</i></p>
+              <p>Soil Of Khoai And Recycled Paper | 5 x 5 inches (each) (set of 12 Pieces) | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/adg.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Untitled</i></p>
+              <p>Drawing On Paper And Soaked In A Pond For A Week | 9.5 x 11 inches (set of 2 ) | 2017</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Lost, yet never lost copy.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Lost Yet Never Lost</i></p>
+              <p>Rust Powder On Canvas | 3 x 2 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/drawing on glass.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Growth</i></p>
+              <p>Organic Ink On Glass | 5 x 5 inches (each) (set of 5) | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/untitled-3 copy.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Untitled</i></p>
+              <p>Etched Iron Sheet (Rusting) And Rust Transferred To Paper | Variable size | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Untitled-4 copy.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Untitled</i></p>
+              <p>Iron Dust And Objects On Canvas | 4 x 3 inches | 2017</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/the broken SUN 1 final.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>The Broken Sun</i></p>
+              <p>Stone Dust, Mud, Soil, Sand On Canvas Board | 6 x 6 inches (each) (set of 50) | 2018</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Untitled-2 copy.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Maksud Ali Mondal | <i>Untitled</i></p>
+              <p>Object In Paper Pulp | 4.7 x 6.3 inches (each) (set of 4) | 2017</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/10.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Poorvesh Patel | <i>In Between</i></p>
+              <p>Iron Plates, Rust, Copper Wire, Saw Dust, Fiber Glass On Canvas Board | 24 x 36 inches | 2016</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/14.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+            <p>Poorvesh Patel | <i>Distant Cloud</i></p>
+            <p>Iron, Painted Copper Wire, Iron Powder On Canvas Mounted On Board | 72 x 48 inches | 2016</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Permutation, Combination.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Poorvesh Patel | <i>Permutation-Combination</i></p>
+              <p>Mixed Media | 12 x 12 inches (each) (set of 15) | 2017</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Pile of positive.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Poorvesh Patel | <i>Pile of Positive</i></p>
+              <p>Mixed Media | 48 x 36 inches | 2013</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Re-birth, re-bound.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Poorvesh Patel | <i>Re-Birth/Re-Bound</i></p>
+              <p>Patinated Copper Wire, Iron Powder & Wood Dust On Canvas Mounted On Board | 25 x 25 inches | 2016</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Unconditioned sprouts.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+               <p>Poorvesh Patel | <i>Unconditional Sprount</i></p>
+               <p>Patinated Copper Wire, Iron Powder On Canvas Mounted On Board | 60 x 60 inches | 2016</p>
+            </div>
+          </div>
+        </div><div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Untitted 1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Poorvesh Patel | <i>Untitled 1</i></p>
+              <p>Canvas, Ply Board, Copper Wire, Rust | 72 x 48 inches | 2015</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Vortex.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Poorvesh Patel | <i>Vortex</i></p>
+              <p>Patinated Copper Wire, Iron On Canvas Mounted On Board | 72 x 48 inches | 2016</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/A Journey Through Impermanence/Worms in my brain.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+            <div class="card-body">
+              <p>Poorvesh Patel | <i>Worms in My Brain</i></p>
+              <p>Rust On Canvas | 60 x 60 inches | 2012</p>
+            </div>
+          </div>
+        </div>
+        <!-- Add more cards here -->
+      </div>
+    </div>
+
+    <!-- Enchanting Illusions -->
+    <div class="tab-pane fade" id="R2019" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Virendra Maurya | <i>Future Is Here</i></p>
+              <p>Acrylic On Canvas | 90 x 54 inches | 2019</p>
+            
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Impression on Palm</i></p>
+                <p>Acrylic On Canvas | 54 x 190 inches | 2019</p>
+            
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Fantasy Line</i></p>
+                <p>Acrylic On Canvas | 66 x 186 inches | 2019</p>
+             
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/9.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Floating Illusions</i></p>
+                <p>Acrylic On Canvas | 77 x 184 inches | 2019</p>
+             
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Untitled</i></p>
+                <p>Acrylic On Canvas | 42 x 160 inches | 2019</p>
+             
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/8.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Around Ring</i></p>
+                <p>Acrylic On Canvas | 30 x 153 inches | 2019</p>
+            
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/10.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Untitled</i></p>
+                <p>Acrylic On Canvas | 30 x 24 inches | 2019</p>
+             
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/DSCF8185.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Unknown Shape of Line - 1</i></p>
+                <p>Acrylic On Canvas | 30 x 24 inches | 2019</p>
+            
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/DSCF8184.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Unknown Shape of Line - ||</i></p>
+                <p>Acrylic On Canvas | 30 x 24 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/DSCF8182.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Unknown Shape of Line - IV</i></p>
+                <p>Acrylic On Canvas | 30 x 24 inches | 2019</p>
+           
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/DSCF8188.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Unknown Shape of Line - VI</i></p>
+                <p>Acrylic On Canvas | 30 x 24 inches | 2019</p>
+            
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Enchanting Illusions/DSCF8186.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+                <p>Virendra Maurya | <i>Unknown Shape of Line - VIII</i></p>
+                <p>Acrylic On Canvas | 30 x 24 inches | 2019</p>
+           
+            </div>
+          </div>
+        </div>
+
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!-- Infinite Parabolas -->
+    <div class="tab-pane fade" id="a2019" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Pen And Ink | 36 x 50 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/2.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+             <p>Murali Chinnasamy | <i>Untitled</i></p>
+             <p>Pen And Ink | 22 x 30 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/3.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+               <p>Murali Chinnasamy | <i>Untitled</i></p>
+               <p>Pen And Ink | 22 x 34 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/4.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+               <p>Murali Chinnasamy | <i>Untitled</i></p>
+               <p>Pen And Ink | 22 x 35 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/5.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+                <p>Murali Chinnasamy | <i>Untitled</i></p>
+                <p>Pen And Ink | 9 x 13 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/6.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Pen And Ink | 22 x 30 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/10.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Pen And Ink | 36 x 50 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/11.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Pen And Ink | 36 x 50 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/19.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+                <p>Murali Chinnasamy | <i>Untitled</i></p>
+                <p>Pen And Ink | 26 x 40 inches | 2007</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Infinite Parabolas/20.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+                <p>Murali Chinnasamy | <i>Untitled</i></p>
+                <p>Pen And Ink | 30 x 30 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+       
+
+        <!-- Add more woodcut artworks -->
+      </div>
+    </div>
+
+    <!-- Microcosm -->
+    <div class="tab-pane fade" id="b2019" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 1.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+            <div class="card-body">
+                <p>A Naveen Kumar, India | <i>Vittukal</i></p>
+                <p>Linocut Print on Paper</p>
+             </div>
+          </div>
+        </div>
+
+       
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Abdul Ali Hyder, Pakistan | <i>Heaven</i></p>
+              <p>Etching Print on Paper</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Alexey Parygin, Russia | <i>Micromacro</i></p>
+              <p>Mixed Media</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Amna Subheyl, Pakistan | <i>The Sustainer</i></p>
+              <p>Intaglio Print on Paper</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ana Natividade, Portugal | <i>Sal</i></p>
+              <p>Spit Bite Aquatint Print on Paper</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Aniket Vishwasrao, India | <i>My Artifical View</i></p>
+              <p>Serigraph Print on Paper</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 7.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anna Kodz, Polska | <i>Somewhere Between</i></p>
+              <p>Serigraph Print on Paper</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 8.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Atif Khan, Pakistan | <i>Merry-Go-Round</i></p>
+              <p>Photo etching Print on Paper</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 9.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>L.c. Huang, Taiwan | <i>The Earth</i></p>
+              <p>Surface Print on Paper</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 10.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Bilal Khalid, Pakistan | <i>Maidan</i></p>
+              <p>Etching Print on Paper</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 11.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Cenyace Ballesteros, Mexico | <i>Indigenous Vision of the Multicosm</i></p>
+              <p>Linocut Print on Paper</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 12.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Chaitanya Modak, India | <i>Bhata Varun Shetkaryanchi Pariksha</i></p>
+              <p>Serigraph Print on Paper</p>
+            </div>
+          </div>
+        </div>
+
+         
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 13.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Cheryl Edwards, USA | <i>Quintessence</i></p>
+              <p>Reductive Linocut by Hand</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 14.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Czetan Patil, India | <i>Janma Kundali</i></p>
+              <p>Lasercut Acrylic Print on Paper</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Microcosm Macrocosm (IPEP India)/cosm 15.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Enrique Pérez Martínez, Mexico | <i>Microcosm</i></p>
+              <p>Mezzotint Print on Paper</p>
+            </div>
+          </div>
+        </div>
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!--Minotaur Beyond Myth-->
+
+     <div class="tab-pane fade" id="m2019" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/Ryan_Abreu_Print_1.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+            <div class="card-body">
+               <p>Ryan Abreu | <i>Untitled</i></p>
+               <p>Etching | 9 x 6 inches | 18 x 22 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+       
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/Ryan_Abreu_Print_2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+               <p>Ryan Abreu | <i>Pegador</i></p>
+               <p>Etching | 18 x 22 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/Ryan_Abreu_Print_3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ryan Abreu | <i>Untitled</i></p>
+              <p>Etching | 7.5 x 7.5 inches | 19 x 19 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/ryan3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ryan Abreu | <i>She Told Me That I Have a Heart of Gold</i></p>
+              <p>Etching | 30 x 24.5 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/the cloud.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ryan Abreu | <i>The Cloud of Glory Will Hide the Sun</i></p>
+              <p>Etching | 24 x 24.5 inches | 2013</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/Untitled-6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ryan Abreu | <i>The Mask We Stitch</i></p>
+              <p>Etching | 14 x 14 inches | 2013</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/ryan2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ryan Abreu | <i>Forfeit</i></p>
+              <p>Lithography | 18 x 22 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/DIRTY_BRIDE_1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Ryan Abreu | <i>Dirty Bride</i></p>
+              <p>Etching | 19.5 x 19.5 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/0.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>The Last Play.......</i></p>
+              <p>Wash And Gouache On Paper | 18 x 23 inches | 2019</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>No One Knows</i></p>
+              <p>Etching | 15 x 19 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>Dinakrama</i></p>
+              <p>Wash And Gouache On Paper | 10 x 13 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>Dinakrama</i></p>
+              <p>Wash And Gouache On Paper | 10 x 13 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+
+         
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>Daily Greeds - III</i></p>
+              <p>Embross Print | 12 x 8.5 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>Daily Greeds - IV</i></p>
+              <p>Embross Print | 12 x 8.5 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>In the Name of Culture</i></p>
+              <p>Water Color On Paper | 10 x 7 inches (each) (set of 12) | 2018</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/7.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>Don't Tell Secrets! Otherwise You Will Be One of Those!</i></p>
+              <p>Etching And Aquaint | 12 x 24 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/8.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>Ganjifa</i></p>
+              <p>Etching And Watercolor On Paper | 8 x 4.5 inches (each) | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/9.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>Nirop (Visit to Grandma Tales)</i></p>
+              <p>Wash And Gouache On Paper | 3.5 x 5.5 inches (each) | 2016</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2019/Minotaur-Beyond Myth/11.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Yogesh Ramakrishna | <i>Tingya (False Believe)</i></p>
+              <p>Etching And Aquaint On Paper | 24 x 40 inches | 2016</p>
+            </div>
+          </div>
+        </div>
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+
+
+  </div>
+</div>
+    </div>
+    <div class="tab-pane fade" id="y2018" role="tabpanel">
+      <div class="container-fluid mt-4">
+  <!-- Scrollable Year Tabs -->
+  <div class="scroll-container ">
+    <ul class="nav" id="yearTabs" role="tablist">
+      <li class="nav-item">
+        <button class="nav-link year active" id="p2018-tab" data-bs-toggle="tab" data-bs-target="#p2018" type="button" role="tab">Dynamic Desires</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="R2018-tab" data-bs-toggle="tab" data-bs-target="#R2018" type="button" role="tab">Echo's</button>
+      </li>
+      <li class="nav-item">
+        <button class="nav-link year" id="a2018-tab" data-bs-toggle="tab" data-bs-target="#a2018" type="button" role="tab">Mapping Territories</button>
+      </li>
+     
+    </ul>
+  </div>
+
+  <!-- Content Area -->
+  <div class="tab-content mt-4" id="yearTabsContent">
+
+    <!-- Dynamic Desires -->
+    <div class="tab-pane fade show active" id="p2018" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/9 A.M.1.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>No Place to Live</i></p>
+              <p>Acrylic On Rice Paper And Canvas, Mounted On Cardboard Relief | 42 x 48 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/9 A.M.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>Untitled</i></p>
+              <p>Acrylic On Canvas, Ink Drawing On Acrylic Sheet Hung On Canvas | 42 x 78 inches | 2016</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Behind the Doors.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>Behind the Doors</i></p>
+              <p>Mixed Media On Papercut | 28 x 40 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Hope..jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>Hope</i></p>
+              <p>Paper Cut, Ink On Paper | 30 x 60 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/By the People For The People.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>By the People for the People</i></p>
+              <p>Watercolour And Glass Colour On Paper And Glass | 30 x 40 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Last Forever.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>Lasts Forever</i></p>
+              <p>Mixed Media Papercut | 24 x 30 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Lost.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>Lost</i></p>
+              <p>Mixed Media Papercut | 28 x 40 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Office to Home.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>Office to Home</i></p>
+              <p>Mixed Media Papercut | 20 x 40 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/My Home.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Mariraj Rajasekaran | <i>My Home</i></p>
+              <p>Papercut, Acrylic On Paper | 40 x 85 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/New Cityscape.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>G Anila Kumar | <i>New Cityscape, Variable, Sculpture</i></p>
+              <p>Wood, Glue, Acrylic Color | 7 x 5 x 3 inches (set of 17) | 2018</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Flower Pot.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>G Anila Kumar | <i>Flower Pot</i></p>
+              <p>Acrylic On Canvas, Rice Paper | 60 X 60 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Group Chatting..jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+             <p>G Anila Kumar | <i>Still Life</i></p>
+             <p>Acrylic On Canvas, Rice Paper | 60 X 72 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Group Chatting.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+             <p>G Anila Kumar | <i>Group Chatting</i></p>
+             <p>Acrylic On Canvas | 69.5 X 73 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/This is not a Cake.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>G Anila Kumar | <i>Land Is Not a Cake</i></p>
+              <p>Mixed Media | 109.5 X 71 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Dynamic Desires/Untitled.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Virendra Maurya | <i>Untitled</i></p>
+              <p>Letterpress Ink, Acrylic Colour And Charcoal | 72 X 128.5 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!-- Echo's -->
+    <div class="tab-pane fade" id="R2018" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/0.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Woodcut | 20 x 20 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Intuition About Nature</i></p>
+              <p>Woodcut | 20 x 20 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Woodcut | 20 x 20 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Woodcut | 20 x 20 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Untitled</i></p>
+              <p>Woodcut | 20 x 20 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Muralli Chinnasamy | <i>Penetration (Thought and View)</i></p>
+              <p>Viscosity | 20 x 36 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Interact with Form and Line</i></p>
+              <p>Etching | 20 x 36 inches | 2014</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/7.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Murali Chinnasamy | <i>Script of Nature</i></p>
+              <p>Etching | 20 x 36 inches | 2013</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/3.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Bhaskar Vadla | <i>Construction Through Destruction</i></p>
+              <p>Etching | 4 x 7 inches | 2016</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/4.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Bhakar Vadla | <i>Woodcutter</i></p>
+              <p>Woodcut | 24 x 48 inches</p>
+            
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/a1.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Bhaskar Vadla | <i>Untitled</i></p>
+              <p>Brass | 3 x 4 x 7 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/b2.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Bhaskar Vadla | <i>Untitled</i></p>
+              <p>Brass | 3 x 4 x 7 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/c31.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Bhaskar Vadla | <i>Untitled</i></p>
+              <p>Brass | 4 x 6 x 7 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/d4.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Bhaskar Vadla | <i>Untitled</i></p>
+              <p>Brass | 4 x 6 x 7 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/f6.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Bhaskar Vadla | <i>Untitled</i></p>
+              <p>Brass | 4 x 6 x 7 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+          <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Echo_s/g7.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+               <p>Bhaskar Vadla | <i>Untitled</i></p>
+               <p>Brass | 4 x 6 x 7 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+       
+        <!-- Add more cards -->
+      </div>
+    </div>
+
+    <!-- Mapping Territories -->
+    <div class="tab-pane fade" id="a2018" role="tabpanel">
+      <div class="row g-4">
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Mapping Territories/5.1.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Sumana Som | <i>Memory ||</i></p>
+              <p>Printograph And Drawing On Kora Cloth | 48 x 48 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+
+       
+       
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Mapping Territories/sumona work.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Sumana Som | <i>Memory of a River</i></p>
+              <p>Printograph And Drawing On Cloth | 40 x 51 inches | 2018</p>
+            </div>
+          </div>
+        </div>
+         <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Mapping Territories/DSCF7038.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Neha Verma | <i>Through the Jaali</i></p>
+              <p>Collage, Stencil | 149 x 86 inches | 2017</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Mapping Territories/image1 (42).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Neha Verma | <i>From My Vision</i></p>
+              <p>Papercut, Drawing, Silver Leaf | 5 x 3 inches | 2018</p>
+            </div>
+          </div>
+        </div> 
+     
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Mapping Territories/DSCF7034.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Neha Verma | <i>Landscape Through Jaali</i></p>
+              <p>Papercut | 15 x 15 inches | 2018</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Mapping Territories/DSCF7037.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Neha Verma | <i>Untitled</i></p>
+              <p>Cyanotype Print On Paper | 6 x 3 inches (each) | 2017</p>
+            </div>
+          </div>
+        </div> <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2018/Mapping Territories/DSCF7022.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+            <div class="card-body">
+              <p>Neha Verma | <i>Untitled</i></p>
+              <p>Drawing Collage | 8 x 10 inches (each) | 2017</p>
+            </div>
+          </div>
+        </div>
+       
+
+        <!-- Add more woodcut artworks -->
+      </div>
+    </div>
+  </div>
+  </div>
+  </div>
+    <div class="tab-pane fade" id="y2017" role="tabpanel">
+          <div class="container-fluid mt-4">
+      <!-- Scrollable Year Tabs -->
+      <div class="scroll-container ">
+        <ul class="nav" id="yearTabs" role="tablist">
+          <li class="nav-item">
+            <button class="nav-link year active" id="p2017-tab" data-bs-toggle="tab" data-bs-target="#p2017" type="button" role="tab">Enigmatic Intricacy</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link year" id="R2017-tab" data-bs-toggle="tab" data-bs-target="#R2017" type="button" role="tab">Linear Accents</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link year" id="a2017-tab" data-bs-toggle="tab" data-bs-target="#a2017" type="button" role="tab">Mindful Memories</button>
+          </li>
+          <li class="nav-item">
+            <button class="nav-link year" id="b2017-tab" data-bs-toggle="tab" data-bs-target="#b2017" type="button" role="tab">Tranquil and Trance</button>
+          </li>
+        </ul>
+      </div>
+
+      <!-- Content Area -->
+      <div class="tab-content mt-4" id="yearTabsContent">
+
+        <!-- Enigmatic Intricasies -->
+        <div class="tab-pane fade show active" id="p2017" role="tabpanel">
+          <div class="row g-4">
+            <!-- Example card -->
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Enigmatic Intricacies/The Critique.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                <div class="card-body">
+                  <p>Kundan Mondal | <i>The Critique</i></p>
+                  <p>Mixed Media On Paper | Dia. 17 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Enigmatic Intricacies/Monument (Under Construction).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                <div class="card-body">
+                  <p>Kundan Mondal | <i>Monument (Under Construction)</i></p>
+                  <p>Mixed Media On Paper | 59 x 41 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Enigmatic Intricacies/After Goya.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                <div class="card-body">
+                  <p>Kundan Mondal | <i>After Goya</i></p>
+                  <p>Mixed Media On Plywood | 6 x 4 inches (set of 3) | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Enigmatic Intricacies/Lotus Pond (Memory - I).JPG" class="card-img-top gallery-img" alt="Artwork 1">
+                <div class="card-body">
+                    <p>Sumana Som | <i>Lotus Pond (Memory 1)</i></p>
+                    <p>Mixed Media On Cotton Cloth | 4 x 12 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Enigmatic Intricacies/Absolutely sea is Alive (detail view).JPG" class="card-img-top gallery-img" alt="Artwork 1">
+                <div class="card-body">
+                  <p>Sumana Som | <i>Absolutely Sea Is Alive</i></p>
+                  <p>Cloth | 4 x 10 inches | 2015-2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Enigmatic Intricacies/Untitled..JPG" class="card-img-top gallery-img" alt="Artwork 1">
+                <div class="card-body">
+                  <p>Sanket Viramgami | <i>Untitled</i></p>
+                  <p>Pastels On Paper | 48 x 60 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Enigmatic Intricacies/Untitled.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                <div class="card-body">
+              <p>Sanket Viramgami | <i>Untitled</i></p>
+              <p>Pastels On Paper | 48 x 60 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Enigmatic Intricacies/13.1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                <div class="card-body">
+                  <p>Sumana Som | <i>Absolute</i></p>
+                  <p>Mixed Media On Cotton Cloth | 4 x 12 inches | 2014</p>
+                </div>
+              </div>
+            </div>
+            <!-- Add more cards here -->
+          </div>
+        </div>
+
+        <!-- linear asccents -->
+        <div class="tab-pane fade" id="R2017" role="tabpanel">
+          <div class="row g-4">
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Yahan Arjun Bhi Main Hi aur Bhishma Bhi Main.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Abhishek N Verma | <i>Yahan Arjun Bhi Mai Aur Bhishma Bhi Mai</i></p>
+                  <p>Pencil And Gouache On Paper | 22 x 30 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/A Visionary.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Abhishek N Verma | <i>A Visionary</i></p>
+                  <p>Pencil And Gouache On Paper | 22 x 30 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/The Mountain.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Abhishek N Verma | <i>"The Mountain"</i></p>
+                  <p>Pencil & Gouache On Paper | 22 x 30 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Treasure Revealed.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Abhishek N Verma |<i>Treasure Revealed</i></p>
+                <p>Pencil And Gouache On Paper | 22 x 30 inches | 2016</p>
+              </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2017/Linear Accent/The Village.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+              <p>Anila Kumar | <i>The Village</i></p>
+              <p>Mixed Media On Paper | 22 x 30 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2017/Linear Accent/DSCF5461.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+               <p>Anila Kumar | <i>Farmers Cloud</i></p>
+               <p>Mixed Media On Paper | 22 x 30 inches | 2017</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-4 col-sm-6">
+          <div class="card h-100">
+            <img src="images/past exhibitions/2017/Linear Accent/The Street.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+            <div class="card-body">
+             <p>Anila Kumar | <i>The Street</i></p>
+             <p>Mixed Media On Paper | 22 x 30 inches | 2017</p>
+             </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Flower.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Anila Kumar | <i>The Flower</i></p>
+                <p>Mixed Media On Paper | 42 x 38.5 inches | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Not to Dot.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Kundan Mondal | <i>Not to Dot</i></p>
+                <p>Mixed Media On Paper | 20 x 29.5 inches (set of 4) | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Not to Dot.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Kundan Mondal | <i>Not to Dot</i></p>
+                <p>Mixed Media On Paper | 20 x 29.5 inches (set of 4) | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Not to Dot.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Kundan Mondal | <i>Not to Dot</i></p>
+                <p>Mixed Media On Paper | 20 x 29.5 inches (set of 4) | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Kundan4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+              <p>Kundan Mondal | <i>Not to Dot</i></p>
+              <p>Mixed Media On Paper | 20 x 29.5 inches (set of 4) | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Murali1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+              <p>Murali Chinnasamy | <i>Frequency of Thought XII - XV</i></p>
+              <p>Pen And Ink On Paper | 10 x 14 inches (set of 4) | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Murali2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Murali Chinnasamy | <i>Frequency of Thought XII - XV</i></p>
+                <p>Pen And Ink On Paper | 10 x 14 inches (set of 4) | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Murali3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Murali Chinnasamy | <i>Frequency of Thought XII - XV</i></p>
+                <p>Pen And Ink On Paper | 10 x 14 inches (set of 4) | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Murali4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Murali Chinnasamy | <i>Frequency of Thought XII - XV</i></p>
+                <p>Pen And Ink On Paper | 10 x 14 inches (set of 4) | 2016</p>
+                </div>
+              </div>
+            </div>
+          <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Murali5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Murali Chinnasamy | <i>Frequency of Thought XI</i></p>
+                  <p>Pen And Ink On Paper | 30 x 44 inches (set of 4) | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Murali6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Murali Chinnasamy | <i>Frequency of Thought IX</i></p>
+                  <p>Pen And Ink On Paper | 22 x 30 inches (set of 4) | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Murali7.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+              <p>Murali Chinnasamy | <i>Frequency of Thought X</i></p>
+              <p>Pen And Ink On Paper (Set Of 4) | 22 x 30 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Untitled.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Sanket Viramgami| <i>Untitled</i></p>
+                <p>Pastels On Paper | 8 x 11 inches (set of 6) | 2015 - 17</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Untitled.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Sanket Viramgami| <i>Untitled</i></p>
+                <p>Pastels On Paper | 8 x 11 inches (set of 6) | 2015 - 17</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Untitled.3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Sanket Viramgami| <i>Untitled</i></p>
+                <p>Pastels On Paper | 8 x 11 inches (set of 6) | 2015 - 17</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Untitled.4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Sanket Viramgami| <i>Untitled</i></p>
+                  <p>Pastels On Paper | 8 x 11 inches (set of 6) | 2015 - 17</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Untitled.5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Sanket Viramgami| <i>Untitled</i></p>
+                <p>Pastels On Paper | 8 x 11 inches (set of 6) | 2015 - 17</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Untitled.6.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Sanket Viramgami| <i>Untitled</i></p>
+                  <p>Pastels On Paper | 8 x 11 inches (set of 6) | 2015 - 17</p>
+                </div>
+              </div>
+            </div>
+          
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Rumination.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Srinivas Bobilli | <i>Ruminition</i></p>
+                  <p>Charcoal On Paper | 20 x 28 inches (set of 6) | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Rumination.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Srinivas Bobilli | <i>Ruminition</i></p>
+                <p>Charcoal On Paper | 20 x 28 inches (set of 6) | 2017</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Rumination.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+              <p>Srinivas Bobilli | <i>Ruminition</i></p>
+              <p>Charcoal On Paper | 20 x 28 inches (set of 6) | 2017</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Rumination.3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+              <p>Srinivas Bobilli | <i>Ruminition</i></p>
+              <p>Charcoal On Paper | 20 x 28 inches (set of 6) | 2017</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Rumination.4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Srinivas Bobilli | <i>Ruminition</i></p>
+                  <p>Charcoal On Paper | 20 x 28 inches (set of 6) | 2017</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Linear Accent/Rumination.5.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                  <p>Srinivas Bobilli | <i>Ruminition</i></p>
+                  <p>Charcoal On Paper | 20 x 28 inches (set of 6) | 2017</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Add more cards -->
+          </div>
+        </div>
+
+        <!-- mindful memories -->
+        <div class="tab-pane fade" id="a2017" role="tabpanel">
+          <div class="row g-4">
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Different Tie through a Landscape.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+                  <p>Kundan Mondal | <i>Different Time Through a Landscape</i></p>
+                  <p>Mixed Media On Paper | 82 x 66 inches | 2014</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/For the love of Flowers.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+                  <p>Kundan Mondal | <i>For the Love of Flower</i></p>
+                  <p>Mixed Media On Paper | 72 x 48 inches | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Intellectual Tree Lovers.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+                <p>Kundan Mondal | <i>Intellectual Tree Lovers</i></p>
+                <p>Mixed Media On Paper | 60 x 24 inches | 2010</p>
+                              
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Shadow Fight.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+
+                  <p>Kundan Mondal | <i>Shadow Fight</i></p>
+                  <p>Mixed Media On Paper | 72 x 42 inches | 2014</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Track Record.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+
+                  <p>Kundan Mondal | <i>Track Record</i></p>
+                  <p>Mixed Media On Paper | 60 x 42 inches | 2010</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Paranoid Eyes 06.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+
+                  <p>Mithun Das | <i>Paranoid Eyes 06</i></p>
+                  <p>Acrylic & Pastel On Canvas | 57 x 78 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Need More.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+                  <p>Kundan Mondal | <i>Need More</i></p>
+                  <p>Mixed Media On Paper | 48 x 48 inches | 2014</p>
+                              
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Paranoid Eyes 08.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+
+                  <p>Mithun Das | <i>Paranoid Eyes 08</i></p>
+                  <p>Mixed Media On Canvas | 41 x 41 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Paranoid Eyes 09.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+
+                  <p>Mithun Das | <i>Paranoid Eyes 09</i></p>
+                  <p>Mixed Media On Canvas | 41 x 41 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Paranoid Eyes 10.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+
+                  <p>Mithun Das | <i>Paranoid Eyes 10</i></p>
+                  <p>Mixed Media On Canvas | 66 x 35 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Mindful Memories/Paranoid Eyes 07.jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                <div class="card-body">
+
+                  <p>Mithun Das | <i>Paranoid Eyes 07</i></p>
+                  <p>Mixed Media On Canvas | 41 x 41 inches | 2016</p>
+                </div>
+              </div>
+            </div>
+            <!-- Add more woodcut artworks -->
+          </div>
+        </div>
+
+        <!-- Tranquil and Trance -->
+        <div class="tab-pane fade" id="b2017" role="tabpanel">
+          <div class="row g-4">
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Let me Fly.1.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+                <div class="card-body">
+                <p>Krishna Trivedi | <i>Let Me Fly</i></p>
+                <p>Mixed Media On Canvas | 22 x 18 inches | 2017</p>
+              </div>
+              </div>
+            </div>
+
+          
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Rugged Terrain.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                  <div class="card-body">
+                <p>Krishna Trivedi | <i>Rugged Terrain</i></p>
+                <p>Mixed Media On Paper | 11 x 17 inches | 2017</p>
+              </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Pile of Memories.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>Krishna Trivedi | <i>Pile of Memories</i></p>
+                <p>Mixed Media On Paper | 10 x 14 inches</p>
+              </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Hidden Battle.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+
+                <div class="card-body">
+                  <p>Krishna Trivedi | <i>Hidden Battles</i></p>
+                  <p>Mixed Media On Paper | 20 x 15 inches | 2017</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Between myth and reality.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+
+                  <div class="card-body">
+                  <p>Krishna Trivedi | <i>Between Myth and Reality</i></p>
+                  <p>Mixed Media On Paper | 12 x 16 inches | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Mesmerizing Shekhawati.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+
+                <div class="card-body">
+                <p>Krishna Trivedi | <i>Mesmerizing Shekhawati</i></p>
+                <p>Mixed Media On Vasli Paper | 48 x 16 inches | 2016</p>
+              </div>
+              </div>
+            </div>
+
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Celebration of lights.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+
+                <div class="card-body">
+                  <p>G Anila Kumar | <i>Celebration of Lights</i></p>
+                  <p>Acrylic On Canvas | 83 x 27 inches | 2017</p>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Selfey maine leliya.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                <div class="card-body">
+                <p>G Anila Kumar | <i>Selfie Maine Leliya (I Took My Selfie )</i></p>
+                <p>Acrylic And Oil On Canvas | 130 X 300 inches | 2017</p>
+              </div>
+              </div>
+            </div>
+            <div class="col-md-4 col-sm-6">
+              <div class="card h-100">
+                <img src="images/past exhibitions/2017/Tranquil & Trance/Tree Eye.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+
+                <div class="card-body">
+                  <p>G Anila Kumar | <i>Tree Eye</i></p>
+                  <p>Acrylic And Oil On Canvas | 55 X 57 inches | 2017</p>
+                </div>
+              </div>
+            </div>
+            <!-- Add more cards -->
+          </div>
+        </div>
+      </div>
+      </div>
+    </div>
+  <div class="tab-pane fade" id="y2016" role="tabpanel">
+        <div class="container-fluid mt-4">
+            <!-- Scrollable Year Tabs -->
+            <div class="scroll-container ">
+              <ul class="nav" id="yearTabs" role="tablist">
+                <li class="nav-item">
+                  <button class="nav-link year active" id="p2016-tab" data-bs-toggle="tab" data-bs-target="#p2016" type="button" role="tab">Behold - The Nature</button>
+                </li>
+                <li class="nav-item">
+                  <button class="nav-link year" id="R2016-tab" data-bs-toggle="tab" data-bs-target="#R2016" type="button" role="tab">Woodcut</button>
+                </li>
+              </ul>
+            </div>
+
+      <!-- Content Area -->
+      <div class="tab-content mt-4" id="yearTabsContent">
+                <!-- Ones Own World -->
+                <div class="tab-pane fade show active" id="p2016" role="tabpanel">
+                  <div class="row g-4">
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Some Stains Remain For ever.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+                        <div class="card-body">
+                          <p>Debashree Das | <i>Some Stains Remain Forever</i></p>
+                          <p>Hand Embroidery Acrylic On Canvas | 24 x 24 inches | 2013</p>
+                        </div>
+                      </div>
+                    </div>
+                
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Will Fly Again - I.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                            <p>Debashree Das | <i>Will Fly Again - ||</i></p>
+                            <p>Acrylic On Canvas | 23 x 23 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Will Fly Again - II.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                              <p>Debashree Das | <i>Will Fly Again - |</i></p>
+                              <p>Acrylic On Canvas | 23 x 23 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Discovery of India.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                            <p>Kundan Mondal | <i>Discovery of India</i></p>
+                            <p>Acrylic On Canvas | 72 x 48 inches | 2015</p>
+                        
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Night Watch.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Kundan Mondal | <i>Night Watch</i></p>
+                          <p>Mixed Media On Paper | 11.5 x 8.5 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/The Mystic Gardener.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                        <p>Kundan Mondal | <i>The Mystic Gardener</i></p>
+                        <p>Mixed Media On Paper | 72 x 48 inches (Triptych-Each 24 x 48 inches) | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Love.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Shanmukh Rao | <i>Love</i></p>
+                          <p>Oil On Canvas | 36 x 36 inches | 2015</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Sea of Honey.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Shanmukh Rao | <i>Sea of Honey</i></p>
+                          <p>Mixed Media On Canvas | 72 x 84 inches | 2014</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Behind Fenugreek Leaves.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                        <p>Sneh Mehra | <i>Behind Fenugreek Leaves</i></p>
+                        <p>Oil On Canvas | 46 x 37 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/The Parrot Eater.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                        <p>Sneh Mehra | <i>The Parrot Eater</i></p>
+                        <p>Oil On Canvas | 60 x 40 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Behold the Nature/Untitled.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                        <p>Shanmukha Rao | <i>Untitled</i></p>
+                        <p>Oil On Canvas | 12 x 12 inches | 2015</p>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- Add more cards -->
+                  </div>
+                </div>
+                <!-- linear asccents -->
+                <div class="tab-pane fade" id="R2016" role="tabpanel">
+                  <div class="row g-4">
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Untitled (Chippa Sudhakar).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                            <p>Chippa Sudhakar | <i>Migration</i></p>
+                            <p>Woodcut On Paper | 17.5 x 20 inches | 2016</p>
+                      
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/IMG_2020.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>G Anila Kumar | <i>Inside & Outside</i></p>
+                          <p>Woodcut On Paper | 14.5 x 19.75 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Babu Eshwar Prasad.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                      <p>Babu Eswar Prasad | <i>Untitled</i></p>
+                      <p>Woodcut On Paper | 15 x 20 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Untitled (Bhaskar Vadla).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Bhaskar Vadla | <i>Dance of Shiva</i></p>
+                          <p>Woodcut On Paper | 16 x 22 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Element of Nature (Murali Chinnasamy).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Murali Chinnasamy | <i>Element of Nature</i></p>
+                          <p>Woodcut On Paper | 16 x 16 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/IMG_2018.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Dattatreya Apte | <i>Untitled</i></p>
+                          <p>Woodcut Engraving On Paper | 13 x 18.5 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Untitled (Jayanthi Rabadia).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                            <p>Jayanthi Rabadia | <i>Untitled</i></p>
+                            <p>Woodcut On Paper | 14.5 x 20 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Untitled (Kiran Kumar).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>K L Kiran Kumar | <i>Untitled</i></p>
+                          <p>Woodcut On Paper | 14.5 x 20 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/IMG_2026.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                      <p>Sumedh Kumar | <i>Untitled</i></p>
+                      <p>Woodcut On Paper | 14.75 x 20.25 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/IMG_2019.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                            <p>A Rajeshwar Rao | <i>'New Love' 'New Love' 'New Love'</i></p>
+                            <p>Woodcut On Paper | 16 x 22 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Untitled (Sajid Bin Amar).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Sajid Bin Amar | <i>Untitled</i></p>
+                          <p>Woodcut On Paper | 15.75 x 19.75 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Untitled (Sreekanth Kurva).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Sreekanth Kurva | <i>Untitled</i></p>
+                          <p>Woodcut On Paper | 14.5 x 20 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Untitled (Vijay Bagodi).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Vijay Bagodi | <i>Untitled</i></p>
+                          <p>Woodcut On Paper | 16.75 x 23 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                      <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Swapneesh Vaigankar.jpeg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                        <p>Swapnesh Vaigankar | <i>Influential Deccan</i></p>
+                        <p>Woodcut On Paper | 14.5 x 20 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/Untitled (T Vaikuntam).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                          <p>Thota Vaikuntam | <i>Untitled</i></p>
+                          <p>Woodcut On Paper | 16 x 20 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                      <div class="col-md-4 col-sm-6">
+                      <div class="card h-100">
+                        <img src="images/past exhibitions/2016/Woodcut/IMG_2023.JPG" class="card-img-top gallery-img" alt="Artwork 2">
+                        <div class="card-body">
+                        <p>T Venkanna | <i>Love Life</i></p>
+                        <p>Woodcut On Paper | 14.75 x 20 inches | 2016</p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                    </div>
+                  </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade" id="y2015" role="tabpanel">
+                  <div class="container-fluid mt-4">
+                    <!-- Scrollable Year Tabs -->
+                    <div class="scroll-container ">
+                      <ul class="nav" id="yearTabs" role="tablist">
+                        <li class="nav-item">
+                          <button class="nav-link year active" id="p2015-tab" data-bs-toggle="tab" data-bs-target="#p2015" type="button" role="tab">One's Own World</button>
+                        </li>
+                        <li class="nav-item">
+                          <button class="nav-link year" id="R2015-tab" data-bs-toggle="tab" data-bs-target="#R2015" type="button" role="tab">The Full Scape</button>
+                        </li>
+                        <li class="nav-item">
+                          <button class="nav-link year" id="a2015-tab" data-bs-toggle="tab" data-bs-target="#a2015" type="button" role="tab">Woodcut</button>
+                        </li>
+                        <li class="nav-item">
+                          <button class="nav-link year" id="b2015-tab" data-bs-toggle="tab" data-bs-target="#b2015" type="button" role="tab">The Unknown</button>
+                        </li>
+                      </ul>
+                    </div>
+
+                      <!-- Content Area -->
+                      <div class="tab-content mt-4" id="yearTabsContent">
+
+                        <!-- Ones Own World -->
+                        <div class="tab-pane fade show active" id="p2015" role="tabpanel">
+                          <div class="row g-4">
+                            <!-- Example card -->
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/14X14 inches (5).jpg" class="card-img-top gallery-img" alt="14">
+                                <div class="card-body">
+                                  <p>Bandi Durga Prasad | <i>Untitled</i></p>
+                                  <p>Mixed Media On Paper | 14 x 14 inches | 2010</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/14X14 inches (4).jpg" class="card-img-top gallery-img" alt="1">
+                                <div class="card-body">
+                                  <p>Bandi Durga Prasad | <i>Untitled</i></p>
+                                  <p>Mixed Media On Paper | 14 x 14 inches | 2010</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/14X14 inches-.jpg" class="card-img-top gallery-img" alt="A">
+                                <div class="card-body">
+                                  <p>Bandi Durga Prasad | <i>Untitled</i></p>
+                                  <p>Oil Paste & Ink On Paper | 14 x 14 inches | 2010</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <p>Bandi Durga Prasad</p>
+                                <img src="images/past exhibitions/2015/One_s Own World/18X25 inches (2).jpg" class="card-img-top gallery-img" alt="Art">
+                                <div class="card-body">
+                                  <p>Bandi Durga Prasad | <i>Untitled</i></p>
+                                  <p>Oil Pastels & Ink On Paper | 18 x 25 inches | 2010</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/set of 5.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Bandi Durga Prasad | <i>Contemplation (Series)</i></p>
+                                  <p>Mixed Media On Paper | 9 x 12 inches (each) | 2008</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/small (2).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Bandi Durga Prasad | <i>Untitled</i></p>
+                                  <p>Pen And Ink On Paper | 7 x 7 inches(each) | 2010</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/City Scape.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Krishna Trivedi | <i>City Scape</i></p>
+                                  <p>Mixed Media On Paper | 22 x 30 inches | 2013</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/14X14 inches (1).jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Bandi Durga Prasad | <i>Untitled</i></p>
+                                  <p>Mixed Media On Paper | 14 x 14 inches | 2010</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/Tea Time.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Krishna Trivedi | <i>Tea Time</i></p>
+                                  <p>Mixed Media On Paper | 14.5 x 21.5 inches | 2013</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/Crushing Summer.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Krishna Trivedi | <i>Crushing Summer</i></p>
+                                  <p>Mixed Media On Paper | 22 x 30 inches | 2012</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/Mapping my own Territories..jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Krishna Trivedi | <i>Mapping My Own Territories</i></p>
+                                  <p>Mixed Media On Paper | 2013</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/Mapping my own territories.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Krishna Trivedia | <i>Mapping My Own Territories</i></p>
+                                  <p>Mixed Media On Paper | 2013</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/9.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Krishna Trivedi | <i>Remembering Ruins</i></p>
+                                  <p>Mixed Media On Paper | 26 x 33 inches | 2013</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/_Mapping my own Territories_.1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Krishna Trivedia | <i>Mapping My Own Territories</i></p>
+                                  <p>Mixed Media On Paper | 2013</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/One_s Own World/Step by Step.1.jpg" class="card-img-top gallery-img" alt="Artwork 1">
+                                <div class="card-body">
+                                  <p>Krishna Trivedi | <i>Step by Step</i></p>
+                                  <p>Mixed Media On Paper | 22 Ã— 30 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Add more cards here -->
+                          </div>
+                        </div>
+
+                        <!-- The Full Scape -->
+                        <div class="tab-pane fade" id="R2015" role="tabpanel">
+                          <div class="row g-4">
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/Growing with Innovation.1.jpg" class="card-img-top gallery-img" alt="Artw">
+                                <div class="card-body">
+                                  <p>Bhaskar Vadla | <i>Growing with Innovation</i></p>
+                                  <p>Woodcut On Paper | 48 X 192 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/Untitled.1 (2).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Bhaskar Vadla | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 48 X 72 inches</p>
+                                  
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/_Untitled_1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Bhaskar Vadla | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 48 X 90 inches</p>
+                                  
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/_Untitled_.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Gayatri | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 36 X 48 inches</p>
+
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/Untitled.1 (1).jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Gayatri | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 36 X 42 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+
+                                <img src="images/past exhibitions/2015/The Full Scape/Madonna & child in the Womb.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Karuna Sukka | <i>Madonna & Child in the Womb</i></p>
+                                  <p>Woodcut On Paper | 72 X 48 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/When my son was born to my sister.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Karuna Sukka | <i>When My Son Was Born to My Sister</i></p>
+                                  <p>Woodcut On Paper | 65 X 48 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/_Untitled_.4.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Laxmi Kiran | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 12 x 16 inches</p>
+                              
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/Untitled.1.1.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Laxmi Kiran | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 12 x 16 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/Untitled.2.2.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Laxmi Kiran | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 12 x 16 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Full Scape/Untitled.3.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Laxmi Kiran | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 36 X 42 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Add more cards -->
+                          </div>
+                        </div>
+
+                        <!-- Woodcut -->
+                        <div class="tab-pane fade" id="a2015" role="tabpanel">
+                          <div class="row g-4">
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Anticipation        (T. Sudhakar Reddy).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                    <p>T Sudhakar Reddy | <i>Anticipation</i></p>
+                                    <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Lust for S_X (Gayathri D).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                    <p>Gayatri | <i>Lust for S-X</i></p>
+                                    <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Untitled (SAJID BIN AMAR).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                    <p>Sajid Bin Amar | <i>Untitled</i></p>
+                                    <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/I am Listening (Prathap Modi).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                    <p>Prathap Modi | <i>I Am Listening</i></p>
+                                    <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Untitled (B Karuna Sukka).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                    <p>Karuna Sukka | <i>Untitled</i></p>
+                                    <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Telangana Vanitha (Thota Vaikuntam).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                  <p>Thota Vaikuntam | <i>Telangana Vanitha</i></p>
+                                  <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Untitled (Vijay Bagodi).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                    <p>Vijay Bagodi | <i>Untitled</i></p>
+                                    <p>Woodcut On Paper | 15 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/The Wedding Gown (B Padma Reddy).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                  <p>B Padma Reddy | <i>The Wedding Gown</i></p>
+                                  <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Untitled (Sreekanth Kurva).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                  <p>Sreekanth Kurva | <i>Untitled</i></p>
+                                  <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Mujhe Sharam Aarahi Hia (Laxmi Kiran).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                  <p>Lakshmi Kiran | <i>Mujhe Sharam Aarahee Hai</i></p>
+                                  <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/Time to time (P C Shekar).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                  <p>Purna Chandra Sekhar | <i>Time to Time</i></p>
+                                  <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/Woodcut/The Making of a Nation (Jagadeesh Tammineni).jpg" class="card-img-top gallery-img" alt="Woodcut 1">
+                                <div class="card-body">
+                                  <p>Jagadeesh Tammineni | <i>The Making of a Nation</i></p>
+                                  <p>Woodcut On Paper | 18 x 20 inches | 2015</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <!-- Add more woodcut artworks -->
+                          </div>
+                        </div>
+
+                        <!-- The Unknown -->
+                        <div class="tab-pane fade" id="b2015" role="tabpanel">
+                          <div class="row g-4">
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - I.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+                                <div class="card-body">
+                                  <p>Srihari Bholekar | <i>The Unknown #11</i></p>
+                                  <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - II.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+                                <div class="card-body">
+                                    <p>Srihari Bholekar | <i>The Unknown #15</i></p>
+                                    <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - III.jpg" class="card-img-top gallery-img" alt="The Unknown 1">
+                                <div class="card-body">
+                                  <p>Srihari Bholekar | <i>The Unknown #2</i></p>
+                                  <p>Pen Ink On Paper | 20 x 30 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Add more unknown artworks -->
+                    
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - IV.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Srihari Bholekar | <i>The Unknown #13</i></p>
+                                  <p>Pen Ink On Paper | 22 x 30 inches</p>
+
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - V.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                    <p>Srihari Bholekar | <i>The Unknown #1</i></p>
+                                    <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                  
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - VI.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                    <p>Srihari Bholekar | <i>The Unknown #14</i></p>
+                                    <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - VII.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Srihari Bholekar | <i>The Unknown #18</i></p>
+                                  <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - VIII.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Srihari Bholekar | <i>The Unknown #16</i></p>
+                                  <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - IX.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Srihari Bholekar | <i>The Unknown #3</i></p>
+                                  <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - X.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                    <p>Srihari Bholekar | <i>The Unknown #</i></p>
+                                    <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                </div>
+                              </div>
+                            </div>
+
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - XI.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                  <p>Srihari Bholekar | <i>The Unknown #5</i></p>
+                                  <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                </div>
+                              </div>
+                            </div>
+                            <div class="col-md-4 col-sm-6">
+                              <div class="card h-100">
+                                <img src="images/past exhibitions/2015/The Unknown/The Unknown - XII.jpg" class="card-img-top gallery-img" alt="Artwork 2">
+                                <div class="card-body">
+                                    <p>Srihari Bholekar | <i>The Unknown #7</i></p>
+                                    <p>Pen Ink On Paper | 22 x 30 inches</p>
+                                </div>
+                              </div>
+                            </div>
+                            <!-- Add more cards -->
+                          </div>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+
+                <div class="tab-pane fade" id="y2014" role="tabpanel">
+                  <div class="container-fluid mt-4">
+                    <!-- Scrollable Year Tabs -->
+                    <div class="scroll-container ">
+                      <ul class="nav" id="yearTabs" role="tablist">
+                        <li class="nav-item"><button class="nav-link year active" id="R2014-tab" data-bs-toggle="tab" data-bs-target="#R2014" type="button" role="tab">Real and Imagined Spaces</button></li>
+                      </ul>
+                    </div>
+
+                    <!-- real and imagined spaces -->
+                    <div class="tab-content mt-4" id="yearTabsContent">
+                      <div class="tab-pane fade show active" id="R2014" role="tabpanel">
+                        <div class="row g-4">
+                          <!-- Card 1 -->
+                          <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                              <img src="images/past exhibitions/2014/Untitled.5.jpg" class="card-img-top gallery-img" alt="untitled img">
+                              <div class="card-body">
+                                <p>Prasad K P | <i>Untitled</i></p>
+                                <p>Watercolour & Casein On Canvas And Rice Paper | 27 x 32 inches | 2013</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                              <img src="images/past exhibitions/2014/The Tree Lovers.1.jpg" class="card-img-top gallery-img" alt="the tree lover">
+                              <div class="card-body">
+                                <p>Kundan Mondal | <i>The Tree Lovers</i></p>
+                                <p>Mixed Media On Canvas | 66 x 60 inches | 2014</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                              <img src="images/past exhibitions/2014/The Act.1.jpg" class="card-img-top gallery-img" alt="the act">
+                              <div class="card-body">
+                                <p>Kundan Mondal | <i>The Act</i></p>
+                                <p>Acrylic, Ink, Soft Pastels On Canvas | 72 x 60 inches | 2014</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                              <img src="images/past exhibitions/2014/Synthetic Landscape.1.jpg" class="card-img-top gallery-img" alt="synthetic img">
+                              <div class="card-body">
+                                <p>Rakesh Roy Chaudhary | <i>Synthetic Landscape</i></p>
+                                <p>Oil On Canvas | 48 x 64 inches | 2014</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                              <img src="images/past exhibitions/2014/Hanu-man.1.jpg" class="card-img-top gallery-img" alt="hanuman">
+                              <div class="card-body">
+                                <p>Kundan Mondal | <i>Hanu-man</i></p>
+                                <p>Acrylic, Watercolour, Soft Pastels, Rice Paper Pasted On Canvas | 60 x 60 inches | 2013</p>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                              <img src="images/past exhibitions/2014/Birth of a Plain.1.jpg" class="card-img-top gallery-img" alt="birt of plain">
+                              <div class="card-body">
+                                <p>Rakesh Roy Chaudhary | <i>Birth of a Plain</i></p>
+                                <p>Oil On Canvas | 48 x 48 inches | 2014</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                              <img src="images/past exhibitions/2014/Drifted and Faded.1.jpg" class="card-img-top gallery-img" alt="Drifted and faded">
+                              <div class="card-body">
+                                <p>Rakesh Roy Chaudhary | <i>Drifted and Faded</i></p>
+                                <p>Oil On Canvas | 48 x 48 inches | 2014</p>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="col-md-4 col-sm-6">
+                            <div class="card h-100">
+                              <img src="images/past exhibitions/2014/Avatar.1.jpg" class="card-img-top gallery-img" alt="Avatar">
+                              <div class="card-body">
+                                <p>Kundan Mondal | <i>Avatar</i></p>
+                                <p>Mixed Media On Canvas | 72 x 48 inches</p>
+                              
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+            </div>
+          </div>
+      </div>
+    </div>
+
+
+  <div class="lightbox" id="lightbox">
+    <div class="lightbox-content">
+      <div class="lightbox-icons">
+        <i class="bi bi-arrows-fullscreen" id="fullscreenBtn"></i>
+        <i class="bi bi-zoom-in" id="zoomBtn"></i>
+        <i class="bi bi-share" id="shareBtn"></i>
+        <i class="bi bi-x-lg" id="closeBtn"></i>
+      </div>
+      <i class="bi bi-chevron-left nav-arrow nav-left" id="prevBtn"></i>
+      <i class="bi bi-chevron-right nav-arrow nav-right" id="nextBtn"></i>
+      <img id="lightbox-img" src="" alt="Artwork">
+    </div>
+  </div>
+
+  <script>
+ 
+  // --- NEW LIGHTBOX SCRIPT ---
+  const lightbox = document.getElementById("lightbox");
+  const lightboxImg = document.getElementById("lightbox-img");
+  // Select all images with the gallery-img class
+  const galleryImgs = document.querySelectorAll(".gallery-img"); 
+  const closeBtn = document.getElementById("closeBtn");
+  const zoomBtn = document.getElementById("zoomBtn");
+  const fullscreenBtn = document.getElementById("fullscreenBtn");
+  const shareBtn = document.getElementById("shareBtn");
+  const prevBtn = document.getElementById("prevBtn");
+  const nextBtn = document.getElementById("nextBtn");
+
+  let currentIndex = 0;
+  let zoomed = false;
+  let isDragging = false, startX, startY, scrollLeft, scrollTop;
+
+  // Open lightbox
+  function openLightbox(index) {
+    currentIndex = index;
+    lightbox.style.display = "flex";
+    lightboxImg.src = galleryImgs[index].src;
+    // Reset zoom state when opening a new image
+    lightboxImg.style.transform = "scale(1)";
+    zoomed = false;
+    zoomBtn.classList.replace("bi-zoom-out", "bi-zoom-in");
+  }
+
+  // Attach click listener to all gallery images
+  galleryImgs.forEach((img, index) => {
+    img.addEventListener("click", () => openLightbox(index));
+  });
+
+  // Close lightbox
+  function closeLightbox() {
+    lightbox.style.display = "none";
+    lightboxImg.style.transform = "scale(1)";
+    zoomed = false;
+    zoomBtn.classList.replace("bi-zoom-out", "bi-zoom-in");
+  }
+  closeBtn.addEventListener("click", closeLightbox);
+
+  // Zoom toggle
+  zoomBtn.addEventListener("click", () => {
+    if (!zoomed) {
+      lightboxImg.style.transform = "scale(1.8)";
+      zoomed = true;
+      zoomBtn.classList.replace("bi-zoom-in", "bi-zoom-out");
+    } else {
+      lightboxImg.style.transform = "scale(1)";
+      zoomed = false;
+      zoomBtn.classList.replace("bi-zoom-out", "bi-zoom-in");
+    }
+  });
+
+  // Fullscreen
+  fullscreenBtn.addEventListener("click", () => {
+    if (lightboxImg.requestFullscreen) lightboxImg.requestFullscreen();
+    else if (lightboxImg.webkitRequestFullscreen) lightboxImg.webkitRequestFullscreen();
+  });
+
+  // Share (Copy Link)
+  shareBtn.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(lightboxImg.src);
+      alert("âœ… Image link copied!");
+    } catch {
+      alert("âŒ Failed to copy link");
+    }
+  });
+
+  // Navigation
+  function showPrev() {
+    currentIndex = (currentIndex - 1 + galleryImgs.length) % galleryImgs.length;
+    // Reset zoom before showing new image for a smooth transition
+    lightboxImg.style.transform = "scale(1)";
+    zoomed = false;
+    zoomBtn.classList.replace("bi-zoom-out", "bi-zoom-in");
+    lightboxImg.src = galleryImgs[currentIndex].src;
+  }
+  function showNext() {
+    currentIndex = (currentIndex + 1) % galleryImgs.length;
+    // Reset zoom before showing new image for a smooth transition
+    lightboxImg.style.transform = "scale(1)";
+    zoomed = false;
+    zoomBtn.classList.replace("bi-zoom-out", "bi-zoom-in");
+    lightboxImg.src = galleryImgs[currentIndex].src;
+  }
+  prevBtn.addEventListener("click", showPrev);
+  nextBtn.addEventListener("click", showNext);
+
+  // Keyboard shortcuts
+  document.addEventListener("keydown", (e) => {
+    if (lightbox.style.display === "flex") {
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowLeft") showPrev();
+      if (e.key === "ArrowRight") showNext();
+    }
+  });
+
+  // Close when clicking outside
+  lightbox.addEventListener("click", (e) => {
+    if (e.target === lightbox) closeLightbox();
+  });
+  
+  // --- END NEW LIGHTBOX SCRIPT ---
+</script>
+
+<?php include 'footer.php'; ?>
+
